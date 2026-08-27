@@ -1,211 +1,63 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVALIACAO - FINAL FIX</title>
-<style>
-body{font-family:system-ui;background:#0a0a0a;color:#fff;text-align:center;padding:10px;margin:0}
-.card{background:#1a1a1a;padding:16px;border-radius:16px;max-width:900px;margin:10px auto;text-align:left;border:1px solid #333}
-input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:none;font-size:15px;box-sizing:border-box;background:#fff;color:#000}
-input:disabled,textarea:disabled{opacity:0.6;background:#ddd}
-button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3px;cursor:pointer;font-size:11px}
-.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-sec{background:#333;color:#fff}.btn-img{background:#9c27b0;color:#fff}
-.btn-save{background:#00ff88;color:#000;font-size:13px;padding:14px;width:100%;margin-top:10px}.btn-edit-q{background:#ffca28;color:#000;font-size:13px;padding:14px;width:100%;margin-top:10px}
-.tab{display:flex;max-width:900px;margin:10px auto;background:#222;border-radius:30px;padding:4px}
-.tab button{flex:1;background:transparent;color:#888;padding:12px}.tab button.active{background:#00ff88;color:#000}
-.q-editor{background:#222;padding:18px;border-radius:12px;margin:22px 0;border:2px solid #444;text-align:left;position:relative}
-.q-editor.salva{border-color:#00ff88;background:#152515}
-.q-editor-header{position:absolute;top:-12px;left:12px;background:#00ff88;color:#000;padding:4px 12px;border-radius:20px;font-weight:900;font-size:12px}
-.status-q{font-size:10px;padding:3px 8px;border-radius:10px;margin-left:6px}
-.status-pendente{background:#ff5252;color:#fff}.status-salva{background:#00ff88;color:#000}
-.alt-row{display:flex;gap:8px;align-items:center;margin:6px 0}.alt-row span{min-width:34px;height:34px;background:#333;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900}
-.img-preview{max-width:100%;border-radius:10px;margin:8px 0;border:2px solid #9c27b0;max-height:250px;display:block}
-.tipo-sel{display:flex;gap:6px;margin:10px 0}.tipo-sel button{flex:1;padding:12px}.tipo-sel button.active{background:#2962ff;color:#fff}
-</style>
-</head>
-<body>
-<h2 style="color:#00ff88">📝 EDITOR - AGORA VAI SALVAR</h2>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>FINAL - FIX ESPAÇO</title><style>body{font-family:system-ui;background:#0a0a0a;color:#fff;text-align:center;padding:10px}.card{background:#1a1a1a;padding:16px;border-radius:16px;max-width:900px;margin:10px auto;text-align:left;border:1px solid #333} input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:none;background:#fff;color:#000;box-sizing:border-box} button{border:none;padding:12px 14px;font-weight:800;border-radius:30px;margin:3px;cursor:pointer}.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-sec{background:#333;color:#fff}.btn-img{background:#9c27b0;color:#fff}.btn-save{background:#00ff88;color:#000;width:100%;padding:16px;font-size:14px;border:3px solid #fff;margin-top:10px}.btn-edit-q{background:#ffca28;color:#000;width:100%;padding:16px;margin-top:10px}.q-editor{background:#222;padding:18px;border-radius:12px;margin:22px 0;border:2px solid #444;position:relative}.q-editor.salva{border-color:#00ff88;background:#152515}.q-editor-header{position:absolute;top:-12px;left:12px;background:#00ff88;color:#000;padding:4px 12px;border-radius:20px;font-weight:900;font-size:12px}.img-preview{max-width:100%;border-radius:10px;margin:8px 0;border:2px solid #9c27b0;max-height:300px;display:block}.alt-row{display:flex;gap:8px;align-items:center;margin:6px 0}.alt-row span{min-width:34px;height:34px;background:#333;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900}.tipo-sel{display:flex;gap:6px;margin:10px 0}.tipo-sel button{flex:1;padding:12px}.tipo-sel button.active{background:#2962ff;color:#fff}</style></head><body>
+<h2 style="color:#00ff88">📝 FINAL - COM BOTÃO SALVAR POR QUESTÃO</h2>
 <div id="statusFirebase" style="font-size:12px;color:#888">Conectando...</div>
-<div class="tab"><button id="tabProf" class="active" onclick="showTab('prof')">👨‍🏫 PROFESSOR</button><button id="tabAluno" onclick="showTab('aluno')">👨‍🎓 ALUNO</button></div>
+<div style="display:flex;max-width:900px;margin:10px auto;background:#222;border-radius:30px;padding:4px"><button id="tabProf" style="flex:1;background:#00ff88;color:#000;padding:12px;border-radius:30px;font-weight:800" onclick="showTab('prof')">👨‍🏫 PROFESSOR</button><button id="tabAluno" style="flex:1;background:transparent;color:#888;padding:12px;border-radius:30px;font-weight:800" onclick="showTab('aluno')">👨‍🎓 ALUNO</button></div>
 <div id="loginProf" class="card" style="max-width:420px"><h3 style="text-align:center;color:#00ff88">🔒 LOGIN</h3><input id="profNome" placeholder="Usuário"><input id="profSenha" type="password" placeholder="Senha"><button class="btn-go" onclick="loginProfessor()" style="width:100%;padding:14px">ENTRAR</button><p id="msgLogin" style="text-align:center;color:#ff5252"></p></div>
 <div id="areaProf" style="display:none">
-<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><h3 style="color:#00ff88;margin:0">Prof: <span id="nomeProfLogado"></span></h3><small id="idProfLogado"></small></div><button class="btn-red" onclick="sair()">SAIR</button></div>
-<div class="card">
-<h3 style="color:#00ff88">+ MONTAR AVALIAÇÃO - COM BOTÃO SALVAR POR QUESTÃO</h3>
-<input id="nomeProva" placeholder="Nome da Prova"><input id="senhaUnica" placeholder="Código: Ex: MAT8A">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><small>INÍCIO</small><input id="dataInicio" type="datetime-local"></div><div><small>FIM</small><input id="dataFim" type="datetime-local"></div></div>
-<div id="editorQuestoes"></div>
-<button class="btn-blue" onclick="addQuestao()" style="width:100%;padding:14px;margin-top:10px">+ ADICIONAR QUESTÃO</button>
-<div style="display:flex;gap:6px;margin-top:10px"><button class="btn-sec" onclick="previewQuestoes()" style="flex:1">👁️ VISUALIZAR</button><button class="btn-sec" onclick="limparEditor()" style="flex:1">🗑️ LIMPAR</button></div>
-<div id="previewArea"></div>
-<button class="btn-go" onclick="salvarProva()" style="width:100%;margin-top:12px;padding:18px;font-size:15px">💾 SALVAR PROVA ONLINE</button>
-<div id="contadorSalvas" style="text-align:center;margin-top:8px;font-size:13px;color:#00ff88;font-weight:800"></div>
-</div>
+<div class="card" style="display:flex;justify-content:space-between"><div><h3 style="color:#00ff88;margin:0">Prof: <span id="nomeProfLogado"></span></h3><small id="idProfLogado"></small></div><button class="btn-red" onclick="sair()">SAIR</button></div>
+<div class="card"><h3 style="color:#00ff88">+ MONTAR AVALIAÇÃO</h3><input id="nomeProva" placeholder="Nome da Prova"><input id="senhaUnica" placeholder="Código: Ex: MAT8A"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><small>INÍCIO</small><input id="dataInicio" type="datetime-local"></div><div><small>FIM</small><input id="dataFim" type="datetime-local"></div></div><div id="editorQuestoes"></div><button class="btn-blue" onclick="addQuestao()" style="width:100%;padding:14px;margin-top:10px">+ ADICIONAR QUESTÃO</button><div style="display:flex;gap:6px;margin-top:10px"><button class="btn-sec" onclick="previewQuestoes()" style="flex:1">👁️ VISUALIZAR</button><button class="btn-sec" onclick="limparEditor()" style="flex:1">🗑️ LIMPAR</button></div><div id="previewArea"></div><button class="btn-go" onclick="salvarProva()" style="width:100%;margin-top:12px;padding:18px">💾 SALVAR PROVA ONLINE</button><div id="contadorSalvas" style="text-align:center;margin-top:8px;color:#00ff88;font-weight:800"></div></div>
 <div class="card"><h3>Minhas Provas (<span id="totalSalas">0</span>)</h3><div id="listaProvas"></div></div>
 <div class="card"><div style="display:flex;justify-content:space-between"><h3>Resultados</h3><select id="filtroSala" onchange="renderRes()"></select></div><div id="tabRes"></div></div>
 </div>
-<div id="areaAluno" style="display:none">
-<div id="alunoLogin" class="card" style="max-width:420px"><h3 style="color:#2962ff;text-align:center">👨‍🎓 ALUNO</h3><input id="alunoLoginInput" placeholder="Seu nome"><button class="btn-blue" onclick="loginAlunoSimples()" style="width:100%">ENTRAR</button><p id="msgAluno" style="color:#ff5252;text-align:center"></p><div style="margin-top:15px;border-top:1px solid #333;padding-top:10px"><input id="codigoProvaAluno" placeholder="Código"><button class="btn-go" onclick="abrirProvaComCodigo()" style="width:100%;padding:14px">📝 ABRIR PROVA</button><div id="listaCodigosDisponiveis" style="font-size:10px;color:#666;margin-top:8px"></div></div></div>
-<div id="areaProva" class="card" style="display:none"><h3 id="titProva"></h3><p id="infoAl"></p><div id="cronometro" style="font-size:20px;color:#00ff88;font-weight:900;text-align:center;background:#000;padding:8px;border-radius:10px">⏰ --:--:--</div><div id="listaQuestoesAluno"></div><button class="btn-go" onclick="enviar()" style="width:100%;margin-top:20px;padding:16px">✅ FINALIZAR</button></div>
-<div id="resAl" class="card" style="display:none"></div>
-</div>
+<div id="areaAluno" style="display:none"><div id="alunoLogin" class="card" style="max-width:420px"><h3 style="color:#2962ff;text-align:center">👨‍🎓 ALUNO</h3><input id="alunoLoginInput" placeholder="Seu nome"><button class="btn-blue" onclick="loginAlunoSimples()" style="width:100%">ENTRAR</button><p id="msgAluno" style="text-align:center;color:#ff5252"></p><div style="margin-top:15px;border-top:1px solid #333;padding-top:10px"><input id="codigoProvaAluno" placeholder="Código"><button class="btn-go" onclick="abrirProvaComCodigo()" style="width:100%;padding:14px">📝 ABRIR PROVA</button><div id="listaCodigosDisponiveis" style="font-size:10px;color:#666"></div></div></div><div id="areaProva" class="card" style="display:none"><h3 id="titProva"></h3><p id="infoAl"></p><div id="cronometro" style="font-size:20px;color:#00ff88;font-weight:900;text-align:center;background:#000;padding:8px;border-radius:10px">⏰ --:--:--</div><div id="listaQuestoesAluno"></div><button class="btn-go" onclick="enviar()" style="width:100%;margin-top:20px;padding:16px">✅ FINALIZAR</button></div><div id="resAl" class="card" style="display:none"></div></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyCLaqaOCJnkfG4LID1Y5RoFpgEsX9nYGOM", authDomain: "testeapi-1ad07.firebaseapp.com", projectId: "testeapi-1ad07", storageBucket: "testeapi-1ad07.firebasestorage.app", messagingSenderId: "323295128076", appId: "1:323295128076:web:3af167424f75b680f19c29" };
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-let profLogado=null, provas=[], resultados=[], provaAtual=null, respostas=[], timerInterval=null, alunoLogado=null;
-window.todasProvas=[]; const ADMIN_USER="gardoni";
+const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+let profLogado=null, provas=[], resultados=[], provaAtual=null, respostas=[], timerInterval=null, alunoLogado=null; window.todasProvas=[]; const ADMIN_USER="gardoni";
 function norm(s){return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'_');}
-function parseDataLocal(str){if(!str)return null;try{let[data,hora]=str.split('T');let[ano,mes,dia]=data.split('-').map(Number);let[h,m]=hora.split(':').map(Number);return new Date(ano,mes-1,dia,h,m);}catch{return new Date(str);}}
+function parseDataLocal(str){if(!str)return null;try{let[a,b]=str.split('T');let[ano,mes,dia]=a.split('-').map(Number);let[h,m]=b.split(':').map(Number);return new Date(ano,mes-1,dia,h,m);}catch{return new Date(str);}}
 let contadorQuestoes=0;
-
 window.addQuestao=function(dados=null){
   let todas=document.querySelectorAll('#editorQuestoes.q-editor');
-  if(todas.length>0){
-    let ultima=todas[todas.length-1];
-    if(ultima.dataset.salva!=="true"){
-      alert("⚠️ Salve a questão atual antes! Clique em 💾 SALVAR QUESTÃO");
-      ultima.scrollIntoView({behavior:'smooth'});
-      return;
-    }
-  }
-  contadorQuestoes++;
-  let container=document.getElementById('editorQuestoes');
-  let div=document.createElement('div');
-  div.className='q-editor'; if(dados)div.classList.add('salva');
-  div.dataset.tipo=dados?.tipo||'multipla'; div.dataset.salva=dados?"true":"false";
-  div.innerHTML=`
-    <div class="q-editor-header">QUESTÃO ${container.children.length+1} <span class="status-q ${dados?'status-salva':'status-pendente'}">${dados?'✅ SALVA':'⏳ PENDENTE'}</span></div>
-    <button class="btn-red" style="position:absolute;top:8px;right:8px" onclick="this.parentElement.remove(); atualizarNumeracao(); atualizarContador()">✕ REMOVER</button>
-    <div class="tipo-sel">
-      <button class="btn-sec ${div.dataset.tipo=='multipla'?'active':''}" data-tipo="multipla" onclick="setTipo(this)">📝 Múltipla Escolha</button>
-      <button class="btn-sec ${div.dataset.tipo=='dissertativa'?'active':''}" data-tipo="dissertativa" onclick="setTipo(this)">✍️ Escrever</button>
-    </div>
-    <label style="color:#00ff88;font-size:12px;font-weight:800">PERGUNTA - OBRIGATÓRIO:</label>
-    <textarea class="pergunta-input" placeholder="Digite a pergunta aqui... Ex: Quanto é 2+2?" rows="3" style="background:#fff;color:#000;font-weight:600;border:2px solid #00ff88" ${dados?'disabled':''}>${dados?.pergunta||""}</textarea>
-    <input type="file" accept="image/*" class="img-file" style="display:none" onchange="handleImagem(this)">
-    <button class="btn-img" onclick="this.previousElementSibling.click()" style="width:100%;margin-top:6px" ${dados?'disabled':''}>🖼️ ADICIONAR IMAGEM</button>
-    <div class="img-container" data-base64="${dados?.imagem||""}">${dados?.imagem?`<img src="${dados.imagem}" class="img-preview">`:""}</div>
-    <div class="multipla-area" style="display:${div.dataset.tipo=='multipla'?'block':'none'}">
-      <div class="alt-row"><span>A</span><input class="alt-A" placeholder="Alternativa A" value="${dados?.A||""}" ${dados?'disabled':''}></div>
-      <div class="alt-row"><span>B</span><input class="alt-B" placeholder="Alternativa B" value="${dados?.B||""}" ${dados?'disabled':''}></div>
-      <div class="alt-row"><span>C</span><input class="alt-C" placeholder="Alternativa C" value="${dados?.C||""}" ${dados?'disabled':''}></div>
-      <div class="alt-row"><span>D</span><input class="alt-D" placeholder="Alternativa D" value="${dados?.D||""}" ${dados?'disabled':''}></div>
-      <div style="margin-top:8px"><small>Correta:</small> <select class="gab-select" style="width:100px" ${dados?'disabled':''}><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
-    </div>
-    <div class="dissertativa-area" style="display:${div.dataset.tipo=='dissertativa'?'block':'none'}"><small>Aluno vai escrever</small></div>
-    <button class="btn-save" onclick="salvarQuestao(this)" style="${dados?'display:none':''}">💾 SALVAR ESTA QUESTÃO</button>
-    <button class="btn-edit-q" onclick="editarQuestao(this)" style="${dados?'':'display:none'}">✏️ EDITAR ESTA QUESTÃO</button>
-  `;
-  if(dados?.gab) div.querySelector('.gab-select').value=dados.gab;
-  container.appendChild(div); atualizarContador(); div.scrollIntoView({behavior:'smooth'});
+  if(todas.length>0){let ultima=todas[todas.length-1]; if(ultima.dataset.salva!=="true"){alert("⚠️ Salve a questão atual antes! Clique em 💾 SALVAR ESTA QUESTÃO"); return;}}
+  contadorQuestoes++; let container=document.getElementById('editorQuestoes'); let div=document.createElement('div'); div.className='q-editor'; if(dados)div.classList.add('salva'); div.dataset.tipo=dados?.tipo||'dissertativa'; div.dataset.salva=dados?"true":"false";
+  div.innerHTML=`<div class="q-editor-header">QUESTÃO ${container.children.length+1} <span>${dados?'✅ SALVA':'⏳ PENDENTE'}</span></div><button class="btn-red" style="position:absolute;top:8px;right:8px" onclick="this.parentElement.remove(); atualizarNumeracao(); atualizarContador()">✕ REMOVER</button><div class="tipo-sel"><button class="btn-sec ${div.dataset.tipo=='multipla'?'active':''}" data-tipo="multipla" onclick="setTipo(this)">📝 Múltipla</button><button class="btn-sec ${div.dataset.tipo=='dissertativa'?'active':''}" data-tipo="dissertativa" onclick="setTipo(this)">✍️ Escrever</button></div><label style="color:#00ff88;font-weight:800;font-size:12px">PERGUNTA:</label><textarea class="pergunta-input" placeholder="Digite a pergunta ou deixe texto curto se for só imagem" rows="3" style="border:2px solid #00ff88" ${dados?'disabled':''}>${dados?.pergunta||""}</textarea><input type="file" accept="image/*" class="img-file" style="display:none" onchange="handleImagem(this)"><button class="btn-img" onclick="this.previousElementSibling.click()" style="width:100%;margin-top:6px" ${dados?'disabled':''}>🖼️ ADICIONAR IMAGEM</button><div class="img-container" data-base64="${dados?.imagem||""}">${dados?.imagem?`<img src="${dados.imagem}" class="img-preview">`:""}</div><div class="multipla-area" style="display:${div.dataset.tipo=='multipla'?'block':'none'}"><div class="alt-row"><span>A</span><input class="alt-A" value="${dados?.A||""}" ${dados?'disabled':''}></div><div class="alt-row"><span>B</span><input class="alt-B" value="${dados?.B||""}" ${dados?'disabled':''}></div><div class="alt-row"><span>C</span><input class="alt-C" value="${dados?.C||""}" ${dados?'disabled':''}></div><div class="alt-row"><span>D</span><input class="alt-D" value="${dados?.D||""}" ${dados?'disabled':''}></div><div><small>Correta:</small> <select class="gab-select" ${dados?'disabled':''}><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div></div><div class="dissertativa-area" style="display:${div.dataset.tipo=='dissertativa'?'block':'none'}"><small>O aluno escreve</small></div><button class="btn-save" onclick="salvarQuestao(this)" style="${dados?'display:none':''}">💾 SALVAR ESTA QUESTÃO</button><button class="btn-edit-q" onclick="editarQuestao(this)" style="${dados?'':'display:none'}">✏️ EDITAR ESTA QUESTÃO</button>`;
+  if(dados?.gab)div.querySelector('.gab-select').value=dados.gab; container.appendChild(div); atualizarContador(); div.scrollIntoView({behavior:'smooth'});
 }
-
 window.salvarQuestao=function(btn){
   let div=btn.closest('.q-editor');
   let pergunta=div.querySelector('.pergunta-input')?.value.trim()||"";
-  if(pergunta.length<5){alert("Digite a pergunta na caixa branca! Pelo menos 5 letras.");div.querySelector('.pergunta-input').focus();return;}
-  if(div.dataset.tipo=='multipla'){
-    let a=div.querySelector('.alt-A')?.value.trim(), b=div.querySelector('.alt-B')?.value.trim();
-    if(!a||!b){alert("Preencha alternativa A e B");return;}
-  }
-  div.querySelectorAll('input,textarea,select,.btn-img,.tipo-sel button').forEach(el=>el.disabled=true);
-  div.dataset.salva="true"; div.classList.add('salva');
-  div.querySelector('.status-q').innerText="✅ SALVA"; div.querySelector('.status-q').className="status-q status-salva";
-  btn.style.display="none"; div.querySelector('.btn-edit-q').style.display="block";
-  atualizarContador();
+  let imgC=div.querySelector('.img-container'); let temImg=(imgC?.dataset.base64||"").length>10 || imgC?.querySelector('img');
+  if(pergunta.length<2 &&!temImg){alert("Digite a pergunta OU adicione imagem! No seu print a pergunta está cortada, digite completa.");return;}
+  if(div.dataset.tipo=='multipla'){let a=div.querySelector('.alt-A')?.value.trim(), b=div.querySelector('.alt-B')?.value.trim(); if(!a||!b){alert("Preencha A e B");return;}}
+  div.querySelectorAll('input,textarea,select,.btn-img,.tipo-sel button').forEach(e=>e.disabled=true);
+  div.dataset.salva="true"; div.classList.add('salva'); btn.style.display="none"; div.querySelector('.btn-edit-q').style.display="block"; atualizarContador();
 }
-
-window.editarQuestao=function(btn){
-  let div=btn.closest('.q-editor');
-  div.querySelectorAll('input,textarea,select,.btn-img,.tipo-sel button').forEach(el=>el.disabled=false);
-  div.dataset.salva="false"; div.classList.remove('salva');
-  div.querySelector('.status-q').innerText="⏳ PENDENTE"; div.querySelector('.status-q').className="status-q status-pendente";
-  btn.style.display="none"; div.querySelector('.btn-save').style.display="block";
-  atualizarContador();
-}
-
-window.setTipo=function(btn){
-  let div=btn.closest('.q-editor');
-  if(div.dataset.salva=="true"){alert("Clique em EDITAR primeiro");return;}
-  let tipo=btn.dataset.tipo; div.dataset.tipo=tipo;
-  div.querySelectorAll('.tipo-sel button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
-  div.querySelector('.multipla-area').style.display=tipo=='multipla'?'block':'none';
-  div.querySelector('.dissertativa-area').style.display=tipo=='dissertativa'?'block':'none';
-}
-
-window.handleImagem=function(input){
-  let file=input.files[0];if(!file)return;
-  let container=input.closest('.q-editor').querySelector('.img-container');
-  let reader=new FileReader();
-  reader.onload=function(e){container.innerHTML=`<img src="${e.target.result}" class="img-preview">`;container.dataset.base64=e.target.result;};
-  reader.readAsDataURL(file);
-}
-
-window.atualizarNumeracao=function(){
-  document.querySelectorAll('#editorQuestoes.q-editor').forEach((el,i)=>{
-    el.querySelector('.q-editor-header').innerHTML=`QUESTÃO ${i+1} <span class="status-q ${el.dataset.salva=='true'?'status-salva':'status-pendente'}">${el.dataset.salva=='true'?'✅ SALVA':'⏳ PENDENTE'}</span>`;
-  });
-}
-
-window.atualizarContador=function(){
-  let total=document.querySelectorAll('#editorQuestoes.q-editor').length;
-  let salvas=document.querySelectorAll('#editorQuestoes.q-editor[data-salva="true"]').length;
-  document.getElementById('contadorSalvas').innerText= total==0?"":`📊 ${salvas} de ${total} questões salvas`;
-}
-
-window.limparEditor=function(){if(confirm("Limpar tudo?")){document.getElementById('editorQuestoes').innerHTML="";document.getElementById('previewArea').innerHTML="";contadorQuestoes=0;atualizarContador();}}
-
-window.previewQuestoes=function(){
-  let qs=coletarQuestoes(); if(qs.length==0){alert("Nenhuma questão salva! Clique em 💾 SALVAR ESTA QUESTÃO");return;}
-  let html=`<h4 style="color:#00ff88">✅ ${qs.length} questões salvas</h4>`;
-  qs.forEach((q,i)=>{let imgHtml=q.imagem?`<img src="${q.imagem}" style="max-width:100%;border-radius:8px;margin:8px 0">`:""; if(q.tipo=='dissertativa'){html+=`<div style="background:#222;padding:12px;border-radius:10px;margin:8px 0">${i+1}) ${q.pergunta} ${imgHtml}</div>`;}else{html+=`<div style="background:#222;padding:12px;border-radius:10px;margin:8px 0">${i+1}) ${q.pergunta} ${imgHtml}<br>A) ${q.A}<br>B) ${q.B}<br>C) ${q.C}<br>D) ${q.D} <span style="color:#00ff88">[${q.gab}]</span></div>`;}});
-  document.getElementById('previewArea').innerHTML=html;
-}
-
-function coletarQuestoes(){
-  let lista=[];
-  document.querySelectorAll('#editorQuestoes.q-editor[data-salva="true"]').forEach(div=>{
-    let pergunta=div.querySelector('.pergunta-input')?.value.trim()||""; if(!pergunta)return;
-    let imgContainer=div.querySelector('.img-container'); let imagem=imgContainer?.dataset.base64||"";
-    let tipo=div.dataset.tipo||'multipla';
-    let q={pergunta:pergunta,tipo:tipo,imagem:imagem,htmlImagens:imagem?`<img src="${imagem}">`:"",A:"",B:"",C:"",D:"",gab:"A"};
-    if(tipo=='multipla'){q.A=div.querySelector('.alt-A')?.value||"";q.B=div.querySelector('.alt-B')?.value||"";q.C=div.querySelector('.alt-C')?.value||"";q.D=div.querySelector('.alt-D')?.value||"";q.gab=div.querySelector('.gab-select')?.value||"A";}
-    lista.push(q);
-  });
-  return lista;
-}
-
+window.editarQuestao=function(btn){let div=btn.closest('.q-editor'); div.querySelectorAll('input,textarea,select,.btn-img,.tipo-sel button').forEach(e=>e.disabled=false); div.dataset.salva="false"; div.classList.remove('salva'); btn.style.display="none"; div.querySelector('.btn-save').style.display="block"; atualizarContador();}
+window.setTipo=function(btn){let div=btn.closest('.q-editor'); if(div.dataset.salva=="true"){alert("Clique EDITAR");return;} let t=btn.dataset.tipo; div.dataset.tipo=t; div.querySelectorAll('.tipo-sel button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); div.querySelector('.multipla-area').style.display=t=='multipla'?'block':'none'; div.querySelector('.dissertativa-area').style.display=t=='dissertativa'?'block':'none';}
+window.handleImagem=function(input){let f=input.files[0]; if(!f)return; let c=input.closest('.q-editor').querySelector('.img-container'); let r=new FileReader(); r.onload=e=>{c.innerHTML=`<img src="${e.target.result}" class="img-preview">`; c.dataset.base64=e.target.result;}; r.readAsDataURL(f);}
+window.atualizarNumeracao=function(){document.querySelectorAll('#editorQuestoes.q-editor').forEach((el,i)=>{el.querySelector('.q-editor-header').innerHTML=`QUESTÃO ${i+1} <span>${el.dataset.salva=='true'?'✅ SALVA':'⏳ PENDENTE'}</span>`;});}
+window.atualizarContador=function(){let t=document.querySelectorAll('#editorQuestoes.q-editor').length; let s=document.querySelectorAll('#editorQuestoes.q-editor[data-salva="true"]').length; document.getElementById('contadorSalvas').innerText=t==0?"":`📊 ${s} de ${t} salvas`; }
+window.limparEditor=function(){if(confirm("Limpar?")){document.getElementById('editorQuestoes').innerHTML="";contadorQuestoes=0;atualizarContador();}}
+window.previewQuestoes=function(){let qs=coletarQuestoes(); if(qs.length==0){alert("Clique em SALVAR ESTA QUESTÃO primeiro");return;} let h=`<h4 style="color:#00ff88">✅ ${qs.length} questões</h4>`; qs.forEach((q,i)=>{let im=q.imagem?`<img src="${q.imagem}" style="max-width:100%">`:""; h+=`<div style="background:#222;padding:12px;margin:8px 0;border-radius:10px">${i+1}) ${q.pergunta} ${im}</div>`;}); document.getElementById('previewArea').innerHTML=h;}
+function coletarQuestoes(){let l=[]; document.querySelectorAll('#editorQuestoes.q-editor[data-salva="true"]').forEach(div=>{let p=div.querySelector('.pergunta-input')?.value.trim()||""; let imgC=div.querySelector('.img-container'); let img=imgC?.dataset.base64||""; if(!img){let im=imgC?.querySelector('img'); if(im)img=im.src;} if(!p &&!img)return; if(!p)p="Veja imagem e responda:"; let tipo=div.dataset.tipo||'dissertativa'; let q={pergunta:p,tipo:tipo,imagem:img,htmlImagens:img?`<img src="${img}">`:"",A:"",B:"",C:"",D:"",gab:"A"}; if(tipo=='multipla'){q.A=div.querySelector('.alt-A')?.value||"";q.B=div.querySelector('.alt-B')?.value||"";q.C=div.querySelector('.alt-C')?.value||"";q.D=div.querySelector('.alt-D')?.value||"";q.gab=div.querySelector('.gab-select')?.value||"A";} l.push(q);}); return l;}
 async function carregarSalasParaAluno(){try{let snap=await getDocs(collection(db,"provas"));window.todasProvas=[];snap.forEach(d=>window.todasProvas.push(d.data()));document.getElementById('statusFirebase').innerText="✅ "+window.todasProvas.length+" provas";}catch(e){document.getElementById('statusFirebase').innerText="❌ "+e.message;}}
-window.showTab=function(t){if(t=='prof'){if(!profLogado){loginProf.style.display='block';areaProf.style.display='none';}else{loginProf.style.display='none';areaProf.style.display='block';}areaAluno.style.display='none';}else{areaAluno.style.display='block';areaProf.style.display='none';loginProf.style.display='none';carregarSalasParaAluno();}tabProf.classList.toggle('active',t=='prof');tabAluno.classList.toggle('active',t=='aluno');}
-window.loginAlunoSimples=function(){let login=document.getElementById('alunoLoginInput').value.trim();if(login.length<2){document.getElementById('msgAluno').innerText="Digite seu nome";return;}alunoLogado={login:login,id:norm(login)};document.getElementById('msgAluno').innerText="✅ Olá "+login+"!";}
-window.loginProfessor=async function(){let u=profNome.value.trim(),s=profSenha.value.trim();let id=norm(u);if(!u||!s){msgLogin.innerText="Preencha";return;}let snap=await getDoc(doc(db,"professores",id));if(id===ADMIN_USER&&!snap.exists()){await setDoc(doc(db,"professores",ADMIN_USER),{id:ADMIN_USER,usuario:"gardoni",senha:"Rga@193319",isAdmin:true,timestamp:Date.now()});snap=await getDoc(doc(db,"professores",ADMIN_USER));}if(!snap.exists()){msgLogin.innerText="Não encontrado";return;}let dados=snap.data();if(dados.senha!=s){msgLogin.innerText="Senha errada";return;}profLogado=dados;localStorage.setItem('prof_logado',JSON.stringify(profLogado));nomeProfLogado.innerText=profLogado.usuario;idProfLogado.innerText="ID: "+profLogado.id;loginProf.style.display='none';areaProf.style.display='block';carregarDaNuvem();if(document.getElementById('editorQuestoes').children.length==0)addQuestao();}
+window.showTab=function(t){if(t=='prof'){if(!profLogado){loginProf.style.display='block';areaProf.style.display='none';}else{loginProf.style.display='none';areaProf.style.display='block';}areaAluno.style.display='none';}else{areaAluno.style.display='block';areaProf.style.display='none';loginProf.style.display='none';carregarSalasParaAluno();}tabProf.style.background=t=='prof'?'#00ff88':'transparent';tabAluno.style.background=t=='aluno'?'#00ff88':'transparent';}
+window.loginAlunoSimples=function(){let l=document.getElementById('alunoLoginInput').value.trim();if(l.length<2){document.getElementById('msgAluno').innerText="Digite nome";return;}alunoLogado={login:l,id:norm(l)};document.getElementById('msgAluno').innerText="✅ Olá "+l+"!";}
+window.loginProfessor=async function(){let u=profNome.value.trim(),s=profSenha.value.trim();let id=norm(u);if(!u||!s){msgLogin.innerText="Preencha";return;}let snap=await getDoc(doc(db,"professores",id));if(id===ADMIN_USER&&!snap.exists()){await setDoc(doc(db,"professores",ADMIN_USER),{id:ADMIN_USER,usuario:"gardoni",senha:"Rga@193319",isAdmin:true,timestamp:Date.now()});snap=await getDoc(doc(db,"professores",ADMIN_USER));}if(!snap.exists()){msgLogin.innerText="Não encontrado";return;}let d=snap.data();if(d.senha!=s){msgLogin.innerText="Senha errada";return;}profLogado=d;localStorage.setItem('prof_logado',JSON.stringify(profLogado));nomeProfLogado.innerText=profLogado.usuario;idProfLogado.innerText="ID: "+profLogado.id;loginProf.style.display='none';areaProf.style.display='block';carregarDaNuvem();if(document.getElementById('editorQuestoes').children.length==0)addQuestao();}
 window.sair=function(){profLogado=null;localStorage.removeItem('prof_logado');areaProf.style.display='none';loginProf.style.display='block';}
 async function carregarDaNuvem(){if(!profLogado)return;let snapProvas=await getDocs(collection(db,"provas"));provas=[];snapProvas.forEach(d=>{let p=d.data();if(p.professorId==profLogado.id)provas.push(p);});let snapRes=await getDocs(collection(db,"resultados"));let meusIds=new Set(provas.map(p=>p.id));resultados=[];snapRes.forEach(d=>{let r=d.data();if(meusIds.has(r.provaId))resultados.push(r);});renderSalas();renderRes();await carregarSalasParaAluno();}
-window.salvarProva=async function(){
-  let nome=nomeProva.value.trim(),senha=senhaUnica.value.trim(),ini=dataInicio.value,fim=dataFim.value;
-  if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;}
-  let qs=coletarQuestoes();
-  console.log("Salvando",qs);
-  if(qs.length==0){alert("Nenhuma questão salva! Clique em 💾 SALVAR ESTA QUESTÃO em cada questão. No seu print, você preencheu as alternativas mas a PERGUNTA está vazia (caixa roxa). Digite a pergunta na caixa branca!");return;}
-  let id=`${profLogado.id}_${norm(senha)}`;
-  let obj={id:id,nome:nome,senha:senha,inicio:ini,fim:fim,qtd:qs.length,gabarito:qs.map(q=>q.gab||""),questoes:qs,professorId:profLogado.id,professorNome:profLogado.usuario,timestamp:Date.now()};
-  await setDoc(doc(db,"provas",id),obj,{merge:true});
-  alert(`✅ Prova salva! ${qs.length} questões | Código: ${senha}`);
-  await carregarDaNuvem();
-}
-function renderSalas(){let div=listaProvas;document.getElementById('totalSalas').innerText=provas.length;if(!provas.length){div.innerHTML='<small>Nenhuma prova</small>';return;}let filtro=document.getElementById('filtroSala');filtro.innerHTML='<option value="TODAS">TODAS</option>'+provas.map(p=>`<option value="${p.id}">${p.nome} (${p.senha})</option>`).join('');div.innerHTML=provas.map(p=>`<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div><b style="color:#00ff88">${p.nome}</b> <span style="background:#00ff88;color:#000;padding:2px 6px;border-radius:10px;font-size:10px">${p.qtd}q</span><br><small>Código: <b style="color:#ffeb3b">${p.senha}</b></small></div><div><button style="background:#ffca28;color:#000;border:none;padding:8px 12px;border-radius:20px" onclick="editarProva('${p.id}')">✏️</button><button style="background:#b71c1c;color:#fff;border:none;padding:8px 12px;border-radius:20px" onclick="apagarSala('${p.id}')">🗑️</button></div></div></div>`).join('');}
+window.salvarProva=async function(){let nome=nomeProva.value.trim(),senha=senhaUnica.value.trim(),ini=dataInicio.value,fim=dataFim.value;if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;}let qs=coletarQuestoes();if(qs.length==0){alert("Clique em 💾 SALVAR ESTA QUESTÃO primeiro!");return;}let id=`${profLogado.id}_${norm(senha)}`;let obj={id:id,nome:nome,senha:senha,inicio:ini,fim:fim,qtd:qs.length,gabarito:qs.map(q=>q.gab||""),questoes:qs,professorId:profLogado.id,professorNome:profLogado.usuario,timestamp:Date.now()};await setDoc(doc(db,"provas",id),obj,{merge:true});alert(`✅ Prova salva! ${qs.length} questões | Código: ${senha}`);await carregarDaNuvem();}
+function renderSalas(){let div=listaProvas;document.getElementById('totalSalas').innerText=provas.length;if(!provas.length){div.innerHTML='<small>Nenhuma prova</small>';return;}let filtro=document.getElementById('filtroSala');filtro.innerHTML='<option value="TODAS">TODAS</option>'+provas.map(p=>`<option value="${p.id}">${p.nome} (${p.senha})</option>`).join('');div.innerHTML=provas.map(p=>`<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><b style="color:#00ff88">${p.nome}</b> (${p.qtd}q) - <b style="color:#ffeb3b">${p.senha}</b><div><button style="background:#ffca28;color:#000;border:none;padding:6px 10px;border-radius:20px" onclick="editarProva('${p.id}')">✏️</button><button style="background:#b71c1c;color:#fff;border:none;padding:6px 10px;border-radius:20px" onclick="apagarSala('${p.id}')">🗑️</button></div></div>`).join('');}
 window.editarProva=function(id){let p=provas.find(x=>x.id==id);if(!p)return;nomeProva.value=p.nome;senhaUnica.value=p.senha;dataInicio.value=p.inicio;dataFim.value=p.fim;document.getElementById('editorQuestoes').innerHTML="";contadorQuestoes=0;p.questoes.forEach(q=>addQuestao(q));window.scrollTo({top:0,behavior:'smooth'});atualizarContador();}
 window.apagarSala=async function(id){if(!confirm("Apagar?"))return;await deleteDoc(doc(db,"provas",id));await carregarDaNuvem();}
-window.abrirProvaComCodigo=async function(){if(!alunoLogado){alert("Digite seu nome");return;}let codigo=codigoProvaAluno.value.trim().toLowerCase();let p=window.todasProvas.find(x=>x.senha.trim().toLowerCase()==codigo);if(!p){alert("Código não encontrado");return;}let agora=new Date();let ini=parseDataLocal(p.inicio);let fim=parseDataLocal(p.fim);if(agora<ini){alert("Ainda não começou");return;}if(agora>fim){alert("Encerrada");return;}provaAtual=p;respostas=new Array(p.qtd).fill('');titProva.innerText=`${p.nome}`;infoAl.innerText=`Aluno: ${alunoLogado.login}`;let htmlQ="";p.questoes.forEach((q,i)=>{if(q.tipo=='dissertativa'){htmlQ+=`<div style="background:#222;padding:12px;border-radius:10px;margin:8px 0"><b>${i+1}) ${q.pergunta} ${q.htmlImagens||""}</b><br><textarea placeholder="Resposta..." style="background:#111;color:#fff" rows="4" oninput="respostas[${i}]=this.value"></textarea></div>`;}else{htmlQ+=`<div style="background:#222;padding:12px;border-radius:10px;margin:8px 0"><b>${i+1}) ${q.pergunta} ${q.htmlImagens||""}</b><br><div style="padding:8px;margin:4px 0;background:#111;border-radius:8px" id="q${i}A" onclick="marcar(${i},'A')">A) ${q.A}</div><div style="padding:8px;margin:4px 0;background:#111;border-radius:8px" id="q${i}B" onclick="marcar(${i},'B')">B) ${q.B}</div><div style="padding:8px;margin:4px 0;background:#111;border-radius:8px" id="q${i}C" onclick="marcar(${i},'C')">C) ${q.C}</div><div style="padding:8px;margin:4px 0;background:#111;border-radius:8px" id="q${i}D" onclick="marcar(${i},'D')">D) ${q.D}</div></div>`;}});document.getElementById('listaQuestoesAluno').innerHTML=htmlQ;document.getElementById('alunoLogin').style.display='none';areaProva.style.display='block';if(timerInterval)clearInterval(timerInterval);timerInterval=setInterval(()=>{let d=fim-new Date();if(d<=0){clearInterval(timerInterval);enviar();return;}let h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);cronometro.innerText=`⏰ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000);}
+window.abrirProvaComCodigo=async function(){if(!alunoLogado){alert("Digite nome");return;}let codigo=codigoProvaAluno.value.trim().toLowerCase();let p=window.todasProvas.find(x=>x.senha.trim().toLowerCase()==codigo);if(!p){alert("Código não encontrado");return;}let agora=new Date();let ini=parseDataLocal(p.inicio);let fim=parseDataLocal(p.fim);if(agora<ini){alert("Ainda não começou");return;}if(agora>fim){alert("Encerrada");return;}provaAtual=p;respostas=new Array(p.qtd).fill('');titProva.innerText=`${p.nome}`;infoAl.innerText=`Aluno: ${alunoLogado.login}`;let htmlQ="";p.questoes.forEach((q,i)=>{if(q.tipo=='dissertativa'){htmlQ+=`<div style="background:#222;padding:12px;margin:8px 0;border-radius:10px"><b>${i+1}) ${q.pergunta} ${q.htmlImagens||""}</b><br><textarea placeholder="Resposta..." style="background:#111;color:#fff" rows="4" oninput="respostas[${i}]=this.value"></textarea></div>`;}else{htmlQ+=`<div style="background:#222;padding:12px;margin:8px 0;border-radius:10px"><b>${i+1}) ${q.pergunta} ${q.htmlImagens||""}</b><br><div id="q${i}A" onclick="marcar(${i},'A')" style="padding:8px;background:#111;margin:4px 0;border-radius:8px">A) ${q.A}</div><div id="q${i}B" onclick="marcar(${i},'B')" style="padding:8px;background:#111;margin:4px 0;border-radius:8px">B) ${q.B}</div><div id="q${i}C" onclick="marcar(${i},'C')" style="padding:8px;background:#111;margin:4px 0;border-radius:8px">C) ${q.C}</div><div id="q${i}D" onclick="marcar(${i},'D')" style="padding:8px;background:#111;margin:4px 0;border-radius:8px">D) ${q.D}</div></div>`;}});document.getElementById('listaQuestoesAluno').innerHTML=htmlQ;document.getElementById('alunoLogin').style.display='none';areaProva.style.display='block';if(timerInterval)clearInterval(timerInterval);timerInterval=setInterval(()=>{let d=fim-new Date();if(d<=0){clearInterval(timerInterval);enviar();return;}let h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);cronometro.innerText=`⏰ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000);}
 window.marcar=function(q,l){respostas[q]=l;['A','B','C','D'].forEach(x=>{let el=document.getElementById(`q${q}${x}`);if(el)el.style.background=x==l?"#00ff88":"#111";});}
-window.enviar=async function(){if(timerInterval)clearInterval(timerInterval);let ac=0;for(let i=0;i<provaAtual.qtd;i++){if(provaAtual.questoes[i].tipo!='dissertativa'&&respostas[i]==provaAtual.questoes[i].gab)ac++;}let perc=(ac/provaAtual.qtd*100).toFixed(1);let idResultado=`${provaAtual.id}_${norm(alunoLogado.login)}_${Date.now()}`;let novo={id:idResultado,provaId:provaAtual.id,provaNome:provaAtual.nome,professorId:provaAtual.professorId,professorNome:provaAtual.professorNome,nome:alunoLogado.login.toUpperCase(),loginAluno:alunoLogado.login,acertos:ac,total:provaAtual.qtd,nota:perc,respostas:respostas.join(' | '),gabarito:provaAtual.questoes.map(q=>q.gab||"").join(','),data:new Date().toLocaleString(),timestamp:Date.now()};await setDoc(doc(db,"resultados",idResultado),novo,{merge:true});areaProva.style.display='none';resAl.style.display='block';resAl.innerHTML=`<h3 style="color:#00ff88">✅ Enviado!</h3><b style="font-size:24px">${ac}/${provaAtual.qtd} = ${perc}%</b><br><br><button class="btn-sec" onclick="location.reload()" style="width:100%;padding:14px">🚪 SAIR</button>`;}
-window.renderRes=function(){let div=tabRes;let filtro=document.getElementById('filtroSala')?.value||"TODAS";let lista=filtro=="TODAS"?resultados:resultados.filter(r=>r.provaId==filtro);if(!lista.length){div.innerHTML='<small>Nenhum</small>';return;}let ord=[...lista].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));div.innerHTML=`<table style="width:100%"><tr><th>ALUNO</th><th>NOTA</th></tr>`+ord.map(r=>`<tr><td><b>${r.nome}</b></td><td>${r.acertos}/${r.total} - ${r.nota}%</td></tr>`).join('')+`</table>`;}
+window.enviar=async function(){if(timerInterval)clearInterval(timerInterval);let ac=0;for(let i=0;i<provaAtual.qtd;i++){if(provaAtual.questoes[i].tipo!='dissertativa'&&respostas[i]==provaAtual.questoes[i].gab)ac++;}let perc=(ac/provaAtual.qtd*100).toFixed(1);let idR=`${provaAtual.id}_${norm(alunoLogado.login)}_${Date.now()}`;let novo={id:idR,provaId:provaAtual.id,provaNome:provaAtual.nome,professorId:provaAtual.professorId,professorNome:provaAtual.professorNome,nome:alunoLogado.login.toUpperCase(),loginAluno:alunoLogado.login,acertos:ac,total:provaAtual.qtd,nota:perc,respostas:respostas.join(' | '),gabarito:provaAtual.questoes.map(q=>q.gab||"").join(','),data:new Date().toLocaleString(),timestamp:Date.now()};await setDoc(doc(db,"resultados",idR),novo,{merge:true});areaProva.style.display='none';resAl.style.display='block';resAl.innerHTML=`<h3 style="color:#00ff88">✅ Enviado! ${ac}/${provaAtual.qtd} = ${perc}%</h3><button class="btn-sec" onclick="location.reload()" style="width:100%;padding:14px">🚪 SAIR</button>`;}
+window.renderRes=function(){let div=tabRes;let filtro=document.getElementById('filtroSala')?.value||"TODAS";let lista=filtro=="TODAS"?resultados:resultados.filter(r=>r.provaId==filtro);if(!lista.length){div.innerHTML='<small>Nenhum</small>';return;}div.innerHTML=`<table style="width:100%"><tr><th>ALUNO</th><th>NOTA</th></tr>`+lista.sort((a,b)=>b.timestamp-a.timestamp).map(r=>`<tr><td>${r.nome}</td><td>${r.acertos}/${r.total} ${r.nota}%</td></tr>`).join('')+`</table>`;}
 window.apagarResultado=async function(id){if(!confirm("Apagar?"))return;await deleteDoc(doc(db,"resultados",id));await carregarDaNuvem();}
 let salvo=localStorage.getItem('prof_logado');if(salvo){try{profLogado=JSON.parse(salvo);nomeProfLogado.innerText=profLogado.usuario;idProfLogado.innerText="ID: "+profLogado.id;loginProf.style.display='none';areaProf.style.display='block';carregarDaNuvem();if(document.getElementById('editorQuestoes').children.length==0)addQuestao();}catch{}}carregarSalasParaAluno();
-</script>
-</body>
-</html>
+</script></body></html>
