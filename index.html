@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVALIACAO - Editor Visual</title>
+<title>AVALIACAO - Editor Visual CORRIGIDO</title>
 <style>
 body{font-family:system-ui;background:#0a0a0a;color:#fff;text-align:center;padding:10px;margin:0}
 .card{background:#1a1a1a;padding:16px;border-radius:16px;max-width:900px;margin:10px auto;text-align:left;border:1px solid #333}
@@ -12,8 +12,8 @@ button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3
 .btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-excel{background:#00c853;color:#fff}.btn-sec{background:#333;color:#fff}.btn-edit{background:#ffca28;color:#000}.btn-img{background:#9c27b0;color:#fff}
 .tab{display:flex;max-width:900px;margin:10px auto;background:#222;border-radius:30px;padding:4px}
 .tab button{flex:1;background:transparent;color:#888;padding:12px}.tab button.active{background:#00ff88;color:#000}
-.q-editor{background:#222;padding:16px;border-radius:12px;margin:12px 0;border:2px solid #333;text-align:left;position:relative}
-.q-editor.num{position:absolute;top:-10px;left:15px;background:#00ff88;color:#000;padding:2px 10px;border-radius:20px;font-weight:900;font-size:12px}
+.q-editor{background:#222;padding:16px;border-radius:12px;margin:16px 0;border:2px solid #444;text-align:left;position:relative;padding-top:22px}
+.q-editor.num{position:absolute;top:-10px;left:15px;background:#00ff88;color:#000;padding:2px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .q-card{background:#222;padding:16px;border-radius:12px;margin:12px 0;border:1px solid #333;text-align:left}
 .q-pergunta{font-size:16px;font-weight:700;margin-bottom:10px;color:#fff;line-height:1.5}
 .q-pergunta img{max-width:100%;border-radius:10px;margin:10px 0;border:2px solid #444;display:block}
@@ -21,14 +21,14 @@ button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3
 .q-alt:hover{border-color:#00ff88}
 .q-alt.sel{background:#00ff88;color:#000;border-color:#00ff88;font-weight:800}
 .letra{width:32px;height:32px;background:#333;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900}
-.img-preview{max-width:100%;border-radius:10px;margin:8px 0;border:2px solid #9c27b0;max-height:200px}
+.img-preview{max-width:100%;border-radius:10px;margin:8px 0;border:2px solid #9c27b0;max-height:250px;display:block}
 .tipo-sel{display:flex;gap:6px;margin:8px 0}
 .tipo-sel button{flex:1;padding:10px}
 .tipo-sel button.active{background:#2962ff;color:#fff}
 </style>
 </head>
 <body>
-<h2 style="color:#00ff88">📝 APLICADOR - EDITOR VISUAL DE PROVAS</h2>
+<h2 style="color:#00ff88">📝 APLICADOR - EDITOR VISUAL</h2>
 <div id="statusFirebase" style="font-size:12px;color:#888">Conectando...</div>
 <div class="tab">
   <button id="tabProf" class="active" onclick="showTab('prof')">👨‍🏫 PROFESSOR</button>
@@ -50,9 +50,7 @@ button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3
     <input id="nomeProva" placeholder="Nome da Prova: Ex: 8º ANO - TRIÂNGULOS">
     <input id="senhaUnica" placeholder="Código: Ex: MAT8A">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><small>INÍCIO</small><input id="dataInicio" type="datetime-local"></div><div><small>FIM</small><input id="dataFim" type="datetime-local"></div></div>
-
     <div id="editorQuestoes"></div>
-
     <button class="btn-blue" onclick="addQuestao()" style="width:100%;padding:14px;margin-top:10px">+ ADICIONAR QUESTÃO</button>
     <div style="display:flex;gap:6px;margin-top:10px">
       <button class="btn-sec" onclick="previewQuestoes()" style="flex:1">👁️ VISUALIZAR COMO ALUNO VAI VER</button>
@@ -104,22 +102,22 @@ window.renderEditor = function(){
   div.innerHTML = questoesEditor.map((q, idx)=>`
     <div class="q-editor">
       <span class="num">Q${idx+1}</span>
-      <button class="btn-red" style="position:absolute;top:8px;right:8px" onclick="removerQuestao(${idx})">✕</button>
+      <button class="btn-red" style="position:absolute;top:8px;right:8px" onclick="removerQuestao(${idx})">✕ REMOVER</button>
       <div class="tipo-sel">
         <button class="${q.tipo=='multipla'?'active':''}" onclick="setTipo(${idx},'multipla')">📝 Múltipla Escolha</button>
         <button class="${q.tipo=='dissertativa'?'active':''}" onclick="setTipo(${idx},'dissertativa')">✍️ Escrever</button>
       </div>
-      <textarea placeholder="Digite a pergunta aqui..." rows="2" oninput="questoesEditor[${idx}].pergunta=this.value">${q.pergunta}</textarea>
+      <textarea id="perg_${idx}" placeholder="Digite a pergunta aqui..." rows="3">${q.pergunta}</textarea>
       <input type="file" accept="image/*" id="img_${q.id}" style="display:none" onchange="uploadImagem(${idx}, this)">
       <button class="btn-img" onclick="document.getElementById('img_${q.id}').click()" style="width:100%">🖼️ ${q.imagem?'TROCAR IMAGEM':'ADICIONAR IMAGEM'}</button>
-      ${q.imagem?`<img src="${q.imagem}" class="img-preview"><button class="btn-red" onclick="questoesEditor[${idx}].imagem='';questoesEditor[${idx}].htmlImagens='';renderEditor()">Remover imagem</button>`:""}
+      ${q.imagem?`<img src="${q.imagem}" class="img-preview"><button class="btn-red" onclick="removerImagem(${idx})">Remover imagem</button>`:""}
       ${q.tipo=='multipla'?`
         <div style="margin-top:10px">
-          <div style="display:flex;gap:6px;align-items:center"><span style="background:#333;padding:6px 10px;border-radius:50%">A</span><input placeholder="Alternativa A" value="${q.A}" oninput="questoesEditor[${idx}].A=this.value"></div>
-          <div style="display:flex;gap:6px;align-items:center"><span style="background:#333;padding:6px 10px;border-radius:50%">B</span><input placeholder="Alternativa B" value="${q.B}" oninput="questoesEditor[${idx}].B=this.value"></div>
-          <div style="display:flex;gap:6px;align-items:center"><span style="background:#333;padding:6px 10px;border-radius:50%">C</span><input placeholder="Alternativa C" value="${q.C}" oninput="questoesEditor[${idx}].C=this.value"></div>
-          <div style="display:flex;gap:6px;align-items:center"><span style="background:#333;padding:6px 10px;border-radius:50%">D</span><input placeholder="Alternativa D" value="${q.D}" oninput="questoesEditor[${idx}].D=this.value"></div>
-          <div style="margin-top:8px"><small>Correta:</small> <select onchange="questoesEditor[${idx}].gab=this.value" style="width:auto"><option value="A" ${q.gab=='A'?'selected':''}>A</option><option value="B" ${q.gab=='B'?'selected':''}>B</option><option value="C" ${q.gab=='C'?'selected':''}>C</option><option value="D" ${q.gab=='D'?'selected':''}>D</option></select></div>
+          <div style="display:flex;gap:6px;align-items:center;margin:5px 0"><span style="background:#333;padding:6px 12px;border-radius:50%">A</span><input id="A_${idx}" placeholder="Alternativa A" value="${q.A}"></div>
+          <div style="display:flex;gap:6px;align-items:center;margin:5px 0"><span style="background:#333;padding:6px 12px;border-radius:50%">B</span><input id="B_${idx}" placeholder="Alternativa B" value="${q.B}"></div>
+          <div style="display:flex;gap:6px;align-items:center;margin:5px 0"><span style="background:#333;padding:6px 12px;border-radius:50%">C</span><input id="C_${idx}" placeholder="Alternativa C" value="${q.C}"></div>
+          <div style="display:flex;gap:6px;align-items:center;margin:5px 0"><span style="background:#333;padding:6px 12px;border-radius:50%">D</span><input id="D_${idx}" placeholder="Alternativa D" value="${q.D}"></div>
+          <div style="margin-top:8px"><small>Correta:</small> <select id="gab_${idx}" style="width:100px"><option value="A" ${q.gab=='A'?'selected':''}>A</option><option value="B" ${q.gab=='B'?'selected':''}>B</option><option value="C" ${q.gab=='C'?'selected':''}>C</option><option value="D" ${q.gab=='D'?'selected':''}>D</option></select></div>
         </div>
       `:`
         <div style="margin-top:10px"><small style="color:#888">O aluno vai ver um campo para escrever a resposta</small></div>
@@ -128,23 +126,48 @@ window.renderEditor = function(){
   `).join('');
 }
 
-window.setTipo = function(idx, tipo){ questoesEditor[idx].tipo = tipo; renderEditor(); }
+window.setTipo = function(idx, tipo){
+  // Salva o que já foi digitado antes de trocar
+  salvarEstadoAtual();
+  questoesEditor[idx].tipo = tipo;
+  renderEditor();
+}
 window.removerQuestao = function(idx){ questoesEditor.splice(idx,1); renderEditor(); }
+window.removerImagem = function(idx){ questoesEditor[idx].imagem=''; questoesEditor[idx].htmlImagens=''; renderEditor(); }
+
 window.uploadImagem = function(idx, input){
   let file = input.files[0]; if(!file) return;
   let reader = new FileReader();
   reader.onload = function(e){
+    salvarEstadoAtual();
     questoesEditor[idx].imagem = e.target.result;
     questoesEditor[idx].htmlImagens = `<img src="${e.target.result}">`;
     renderEditor();
   };
   reader.readAsDataURL(file);
 }
+
+function salvarEstadoAtual(){
+  questoesEditor.forEach((q, idx)=>{
+    let pergEl = document.getElementById(`perg_${idx}`);
+    if(pergEl) q.pergunta = pergEl.value;
+    if(q.tipo=='multipla'){
+      let a = document.getElementById(`A_${idx}`); if(a) q.A = a.value;
+      let b = document.getElementById(`B_${idx}`); if(b) q.B = b.value;
+      let c = document.getElementById(`C_${idx}`); if(c) q.C = c.value;
+      let d = document.getElementById(`D_${idx}`); if(d) q.D = d.value;
+      let g = document.getElementById(`gab_${idx}`); if(g) q.gab = g.value;
+    }
+  });
+}
+
 window.limparEditor = function(){ if(confirm("Limpar tudo?")){ questoesEditor=[]; renderEditor(); document.getElementById('previewArea').innerHTML=""; } }
 
 window.previewQuestoes = function(){
+  salvarEstadoAtual();
   let html = `<h4 style="color:#00ff88">✅ ${questoesEditor.length} questões - Preview do aluno</h4>`;
   questoesEditor.forEach((q,i)=>{
+    if(!q.pergunta.trim()) return;
     if(q.tipo=='dissertativa'){
       html += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""}</div><textarea placeholder="Aluno escreve aqui..." rows="3" disabled style="background:#111;color:#fff"></textarea></div>`;
     } else {
@@ -155,13 +178,55 @@ window.previewQuestoes = function(){
   document.getElementById('previewArea').innerHTML = html;
 }
 
+function coletarQuestoesDoEditor(){
+  let coletadas = [];
+  questoesEditor.forEach((q, idx)=>{
+    let pergEl = document.getElementById(`perg_${idx}`);
+    let pergunta = pergEl? pergEl.value.trim() : q.pergunta.trim();
+    if(!pergunta) return;
+    let novaQ = {
+      id: q.id,
+      pergunta: pergunta,
+      tipo: q.tipo,
+      imagem: q.imagem || "",
+      htmlImagens: q.imagem? `<img src="${q.imagem}">` : (q.htmlImagens||""),
+      A: "", B: "", C: "", D: "", gab: "A"
+    };
+    if(q.tipo == 'multipla'){
+      novaQ.A = document.getElementById(`A_${idx}`)?.value || q.A || "";
+      novaQ.B = document.getElementById(`B_${idx}`)?.value || q.B || "";
+      novaQ.C = document.getElementById(`C_${idx}`)?.value || q.C || "";
+      novaQ.D = document.getElementById(`D_${idx}`)?.value || q.D || "";
+      novaQ.gab = document.getElementById(`gab_${idx}`)?.value || q.gab || "A";
+    }
+    coletadas.push(novaQ);
+  });
+  return coletadas;
+}
+
 async function carregarSalasParaAluno(){ try{ let snap=await getDocs(collection(db,"provas")); window.todasProvas=[]; snap.forEach(d=>window.todasProvas.push(d.data())); document.getElementById('statusFirebase').innerText="✅ "+window.todasProvas.length+" provas online"; document.getElementById('listaCodigosDisponiveis').innerText="Códigos: "+window.todasProvas.map(p=>p.senha).join(', '); }catch(e){ document.getElementById('statusFirebase').innerText="❌ "+e.message; } }
 window.showTab = function(t){ if(t=='prof'){if(!profLogado){loginProf.style.display='block'; areaProf.style.display='none';}else{loginProf.style.display='none'; areaProf.style.display='block';} areaAluno.style.display='none';} else{areaAluno.style.display='block'; areaProf.style.display='none'; loginProf.style.display='none'; carregarSalasParaAluno();} tabProf.classList.toggle('active', t=='prof'); tabAluno.classList.toggle('active', t=='aluno'); }
 window.loginAlunoSimples = function(){ let login = document.getElementById('alunoLoginInput').value.trim(); if(login.length < 2){ document.getElementById('msgAluno').innerText="Digite seu nome"; return; } alunoLogado = {login: login, id: norm(login)}; document.getElementById('msgAluno').innerText = "✅ Olá "+login+"!"; }
 window.loginProfessor = async function(){ let u=profNome.value.trim(), s=profSenha.value.trim(); let id=norm(u); if(!u||!s){msgLogin.innerText="Preencha";return;} let snap=await getDoc(doc(db,"professores",id)); if(id===ADMIN_USER &&!snap.exists()){await setDoc(doc(db,"professores",ADMIN_USER),{id:ADMIN_USER, usuario:"gardoni", senha:"Rga@193319", isAdmin:true, timestamp:Date.now()}); snap=await getDoc(doc(db,"professores",ADMIN_USER));} if(!snap.exists()){msgLogin.innerText="Não encontrado";return;} let dados=snap.data(); if(dados.senha!=s){msgLogin.innerText="Senha errada";return;} profLogado=dados; localStorage.setItem('prof_logado', JSON.stringify(profLogado)); nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; loginProf.style.display='none'; areaProf.style.display='block'; carregarDaNuvem(); if(questoesEditor.length==0) addQuestao(); }
 window.sair = function(){profLogado=null; localStorage.removeItem('prof_logado'); areaProf.style.display='none'; loginProf.style.display='block';}
 async function carregarDaNuvem(){ if(!profLogado) return; let snapProvas=await getDocs(collection(db,"provas")); provas=[]; snapProvas.forEach(d=>{let p=d.data(); if(p.professorId==profLogado.id) provas.push(p);}); let snapRes=await getDocs(collection(db,"resultados")); let meusIds=new Set(provas.map(p=>p.id)); resultados=[]; snapRes.forEach(d=>{let r=d.data(); if(meusIds.has(r.provaId)) resultados.push(r);}); renderSalas(); renderRes(); await carregarSalasParaAluno(); }
-window.salvarProva = async function(){ let nome=nomeProva.value.trim(), senha=senhaUnica.value.trim(), ini=dataInicio.value, fim=dataFim.value; if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;} if(questoesEditor.length==0){alert("Adicione pelo menos 1 questão!");return;} let qs = questoesEditor.filter(q=>q.pergunta.trim().length>0); if(qs.length==0){alert("Digite as perguntas!");return;} let id=`${profLogado.id}_${norm(senha)}`; let obj={ id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qs.length, gabarito:qs.map(q=>q.gab||""), questoes:qs, professorId:profLogado.id, professorNome:profLogado.usuario, timestamp:Date.now(), tipo:"editor_visual" }; await setDoc(doc(db,"provas",id),obj,{merge:true}); alert(`✅ Prova salva! ${qs.length} questões | Código: ${senha}`); await carregarDaNuvem(); }
+window.salvarProva = async function(){
+  let nome=nomeProva.value.trim(), senha=senhaUnica.value.trim(), ini=dataInicio.value, fim=dataFim.value;
+  if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;}
+  let qs = coletarQuestoesDoEditor();
+  if(qs.length==0){alert("Digite pelo menos 1 pergunta! A pergunta não pode ficar vazia.");return;}
+  for(let i=0;i<qs.length;i++){
+    if(qs[i].tipo=='multipla' && (!qs[i].A ||!qs[i].B)){
+      alert(`Questão ${i+1} é múltipla escolha mas está sem alternativa A e B. Preencha!`);
+      return;
+    }
+  }
+  let id=`${profLogado.id}_${norm(senha)}`;
+  let obj={ id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qs.length, gabarito:qs.map(q=>q.gab||""), questoes:qs, professorId:profLogado.id, professorNome:profLogado.usuario, timestamp:Date.now(), tipo:"editor_visual" };
+  await setDoc(doc(db,"provas",id),obj,{merge:true});
+  alert(`✅ Prova salva com sucesso! ${qs.length} questões | Código: ${senha}`);
+  await carregarDaNuvem();
+}
 function renderSalas(){ let div=listaProvas; document.getElementById('totalSalas').innerText=provas.length; if(!provas.length){div.innerHTML='<small>Nenhuma prova ainda - Clique em + ADICIONAR QUESTÃO acima</small>';return;} let filtro=document.getElementById('filtroSala'); filtro.innerHTML='<option value="TODAS">TODAS</option>' + provas.map(p=>`<option value="${p.id}">${p.nome} (${p.senha})</option>`).join(''); div.innerHTML=provas.map(p=>`<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div><b style="color:#00ff88">${p.nome}</b> <span style="background:#00ff88;color:#000;padding:2px 6px;border-radius:10px;font-size:10px">${p.qtd}q</span><br><small>Código: <b style="color:#ffeb3b">${p.senha}</b></small></div><div><button class="btn-edit" onclick="editarProva('${p.id}')">✏️</button><button class="btn-red" onclick="apagarSala('${p.id}')">🗑️</button></div></div></div>`).join(''); }
 window.editarProva = function(id){ let p=provas.find(x=>x.id==id); if(!p) return; nomeProva.value=p.nome; senhaUnica.value=p.senha; dataInicio.value=p.inicio; dataFim.value=p.fim; questoesEditor = p.questoes; renderEditor(); window.scrollTo({top:0,behavior:'smooth'}); }
 window.apagarSala = async function(id){if(!confirm("Apagar?"))return; await deleteDoc(doc(db,"provas",id)); await carregarDaNuvem();}
