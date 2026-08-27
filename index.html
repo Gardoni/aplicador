@@ -3,29 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVALIACAO - Aplicador de Avaliações</title>
+<title>AVALIACAO - Prova Online</title>
 <style>
 body{font-family:system-ui;background:#0a0a0a;color:#fff;text-align:center;padding:10px;margin:0}
-.card{background:#1a1a1a;padding:16px;border-radius:16px;max-width:750px;margin:10px auto;text-align:left;border:1px solid #333}
+.card{background:#1a1a1a;padding:16px;border-radius:16px;max-width:850px;margin:10px auto;text-align:left;border:1px solid #333}
 input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:none;font-size:15px;box-sizing:border-box;background:#fff;color:#000}
 button{border:none;padding:9px 14px;font-weight:800;border-radius:30px;margin:3px;cursor:pointer;font-size:11px}
-.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-excel{background:#00c853;color:#fff}.btn-sec{background:#333;color:#fff}.btn-edit{background:#ffca28;color:#000}.btn-admin{background:#ff1744;color:#fff}.btn-block{background:#ff9100;color:#000}.btn-unblock{background:#00e676;color:#000}
-.tab{display:flex;max-width:750px;margin:10px auto;background:#222;border-radius:30px;padding:4px}
+.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-excel{background:#00c853;color:#fff}.btn-sec{background:#333;color:#fff}.btn-edit{background:#ffca28;color:#000}
+.tab{display:flex;max-width:850px;margin:10px auto;background:#222;border-radius:30px;padding:4px}
 .tab button{flex:1;background:transparent;color:#888;padding:12px}.tab button.active{background:#00ff88;color:#000}
-.subtab{display:flex;gap:6px;margin:10px 0}.subtab button{flex:1;padding:10px;font-size:12px}.subtab button.activeSub{background:#ff1744;color:#fff}
-.q-item{background:#222;padding:12px;border-radius:12px;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
-.opt{width:44px;height:44px;border:2px solid #555;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin:0 4px;cursor:pointer;font-weight:800}
-.opt.sel{background:#00ff88;color:#000;border-color:#00ff88}
-.pdf-viewer{width:100%;height:500px;border:2px solid #00ff88;border-radius:12px;background:#fff}
-table{width:100%;font-size:11px;border-collapse:collapse}th{color:#00ff88}td,th{padding:6px;border-bottom:1px solid #333;text-align:left}
-.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800;margin:2px}
-.badge-green{background:#00ff88;color:#000}.badge-admin{background:#ff1744;color:#fff}.badge-prof{background:#2962ff;color:#fff}.badge-blocked{background:#ff3d00;color:#fff}.badge-active{background:#00e676;color:#000}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:99;padding:15px}
-.step{display:none}.step.active{display:block}
+.q-card{background:#222;padding:16px;border-radius:12px;margin:12px 0;border:1px solid #333;text-align:left}
+.q-pergunta{font-size:15px;font-weight:700;margin-bottom:10px;color:#fff}
+.q-alt{padding:10px 12px;margin:6px 0;background:#111;border:2px solid #444;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px}
+.q-alt:hover{border-color:#00ff88}
+.q-alt.sel{background:#00ff88;color:#000;border-color:#00ff88;font-weight:800}
+.letra{width:32px;height:32px;background:#333;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900}
 </style>
 </head>
 <body>
-<h2 style="color:#00ff88">📝 Aplicador de Avaliações</h2>
+<h2 style="color:#00ff88">📝 APLICADOR - PROVA ONLINE</h2>
 <div id="statusFirebase" style="font-size:12px;color:#888">Conectando...</div>
 <div class="tab">
   <button id="tabProf" class="active" onclick="showTab('prof')">👨‍🏫 PROFESSOR</button>
@@ -35,412 +31,83 @@ table{width:100%;font-size:11px;border-collapse:collapse}th{color:#00ff88}td,th{
   <h3 style="text-align:center;color:#00ff88">🔒 LOGIN PROFESSOR</h3>
   <input id="profNome" placeholder="Usuário"><input id="profSenha" type="password" placeholder="Senha">
   <button class="btn-go" onclick="loginProfessor()" style="width:100%;padding:14px">ENTRAR</button>
-  <p id="msgLogin" style="text-align:center;font-size:13px;color:#ff5252"></p>
+  <p id="msgLogin" style="text-align:center;color:#ff5252"></p>
 </div>
 <div id="areaProf" style="display:none">
   <div class="card" style="display:flex;justify-content:space-between;align-items:center">
-    <div><h3 style="color:#00ff88;margin:0">Prof: <span id="nomeProfLogado"></span> <span id="badgeAdmin"></span></h3><small id="idProfLogado" style="color:#888"></small></div>
+    <div><h3 style="color:#00ff88;margin:0">Prof: <span id="nomeProfLogado"></span></h3><small id="idProfLogado"></small></div>
     <button class="btn-red" onclick="sair()">SAIR</button>
   </div>
-  <div id="areaAdmin" class="card" style="display:none;border:2px solid #ff1744">
-    <h3 style="color:#ff1744;margin:0 0 8px">👑 MASTER</h3>
-    <div class="subtab">
-      <button id="btnSubProf" class="activeSub" onclick="showSubAdmin('prof')">👨‍🏫 Professores</button>
-      <button id="btnSubAlunos" onclick="showSubAdmin('alunos')">👨‍🎓 Alunos</button>
-    </div>
-    <div id="adminProf">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="novoProfNome" placeholder="Novo professor"><input id="novoProfSenha" type="password" placeholder="Senha"></div>
-      <button class="btn-admin" onclick="criarProfessor()" style="width:100%">+ CRIAR PROFESSOR</button>
-      <hr style="border-color:#333;margin:12px 0"><div id="listaProfessores"></div>
-    </div>
-    <div id="adminAlunos" style="display:none">
-      <h4 style="color:#2962ff;margin:5px 0">Alunos (<span id="totalAlunosAdmin">0</span>)</h4>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="novoAlunoLogin" placeholder="Login aluno"><input id="novoAlunoSenha" type="password" placeholder="Senha"></div>
-      <button class="btn-blue" onclick="criarAlunoPeloMaster()" style="width:100%">+ CRIAR ALUNO</button>
-      <hr style="border-color:#333;margin:12px 0"><div id="listaAlunosAdmin"></div>
-    </div>
-  </div>
   <div class="card">
-    <h3 style="color:#00ff88;margin:0 0 8px" id="tituloFormSala">+ Nova Prova</h3>
-    <input id="nomeProva" placeholder="Ex: 8º ANO A - AV1"><input id="senhaUnica" placeholder="CÓDIGO DA PROVA ex: MAT8A">
+    <h3 style="color:#00ff88" id="tituloFormSala">+ Nova Prova Online</h3>
+    <input id="nomeProva" placeholder="Ex: 2º ANO - FATORIAL">
+    <input id="senhaUnica" placeholder="CÓDIGO: MAT2A">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><small>INÍCIO</small><input id="dataInicio" type="datetime-local"></div><div><small>FIM</small><input id="dataFim" type="datetime-local"></div></div>
-    <input id="qtdQuestoes" type="number" placeholder="Nº questões"><textarea id="gabaritoProf" rows="2" placeholder="Gabarito: A,B,C,D..."></textarea>
-    <input id="maxTentativas" type="number" placeholder="TENTATIVAS - 0 ou vazio = INFINITO">
-    <input type="file" id="pdfFile" accept="application/pdf" onchange="loadPDF(this)"><div id="pdfInfo" style="color:#00ff88;font-size:12px"></div>
-    <div style="display:flex;gap:6px"><button class="btn-go" onclick="salvarProva()" style="flex:1" id="btnSalvarSala">💾 SALVAR PROVA</button><button class="btn-sec" onclick="cancelarEdicaoSala()" style="display:none" id="btnCancelarSala">CANCELAR</button></div>
+    <textarea id="textoQuestoes" rows="14" placeholder="Cole as questões..."></textarea>
+    <button class="btn-edit" onclick="carregarProva2Ano()" style="width:100%">📚 CARREGAR SUA PROVA DO 2º ANO (10 Q)</button>
+    <div id="previewArea"></div>
+    <button class="btn-go" onclick="salvarProva()" style="width:100%;margin-top:10px" id="btnSalvarSala">💾 SALVAR PROVA ONLINE</button>
   </div>
-  <div class="card"><h3>Minhas Salas (<span id="totalSalas">0</span>)</h3><div id="listaProvas"></div></div>
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap"><h3 style="margin:0">Resultados</h3><select id="filtroSala" onchange="renderRes()" style="width:auto;max-width:180px"></select></div>
-    <button class="btn-sec" onclick="limparDuplicados()" style="width:100%;margin:10px 0;background:#ff9100;color:#000">🧹 LIMPAR DUPLICADOS</button>
-    <div id="tabRes" style="margin-top:10px"></div>
-    <button class="btn-excel" onclick="baixar()" style="width:100%;margin-top:8px">📊 BAIXAR EXCEL</button>
-  </div>
+  <div class="card"><h3>Minhas Provas (<span id="totalSalas">0</span>)</h3><div id="listaProvas"></div></div>
+  <div class="card"><div style="display:flex;justify-content:space-between"><h3>Resultados</h3><select id="filtroSala" onchange="renderRes()"></select></div><div id="tabRes"></div><button class="btn-excel" onclick="baixar()" style="width:100%">📊 BAIXAR EXCEL</button></div>
 </div>
-<div id="modalEditar" class="modal"><div class="card" style="max-width:500px;width:100%"><h3 style="color:#ffca28;margin-top:0">✏️ EDITAR</h3><input type="hidden" id="editId"><input id="editNome" placeholder="Nome"><input id="editCodigo" placeholder="Login"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="editAcertos" type="number" placeholder="Acertos"><input id="editTotal" type="number" placeholder="Total"></div><input id="editNota" type="number" step="0.1" placeholder="Nota"><input id="editRespostas" placeholder="Respostas"><div style="display:flex;gap:8px;margin-top:10px"><button class="btn-go" onclick="salvarEdicaoResultado()" style="flex:1">💾 SALVAR</button><button class="btn-sec" onclick="fecharModal()" style="flex:1">CANCELAR</button></div></div></div>
 <div id="areaAluno" style="display:none">
   <div id="alunoLogin" class="card" style="max-width:420px">
-    <h3 style="color:#2962ff;text-align:center">👨‍🎓 LOGIN ALUNO</h3>
-    <div id="stepLoginAluno" class="step active">
-      <input id="alunoLoginInput" placeholder="Login"><input id="alunoSenhaAluno" type="password" placeholder="Senha">
-      <button class="btn-blue" onclick="loginAluno()" style="width:100%;padding:14px">ENTRAR</button>
-      <p id="msgAluno" style="text-align:center;font-size:12px;color:#ff5252"></p>
-    </div>
-    <div id="stepCodigoProva" class="step">
-      <h4 style="color:#00ff88;margin:0">Olá <span id="nomeAlunoLogado"></span> 👋</h4><hr style="border-color:#333">
-      <p style="font-size:13px">Digite o <b>Código da Prova</b>:</p>
-      <input id="codigoProvaAluno" placeholder="Código ex: MAT8A">
-      <button class="btn-go" onclick="abrirProvaComCodigo()" style="width:100%;padding:14px">📝 ABRIR PROVA</button>
-      <button class="btn-sec" onclick="sairAluno()" style="width:100%;margin-top:6px">SAIR</button>
+    <h3 style="color:#2962ff;text-align:center">👨‍🎓 ALUNO</h3>
+    <input id="alunoLoginInput" placeholder="Seu nome">
+    <button class="btn-blue" onclick="loginAlunoSimples()" style="width:100%">ENTRAR</button>
+    <p id="msgAluno" style="color:#ff5252;text-align:center"></p>
+    <div style="margin-top:15px;border-top:1px solid #333;padding-top:10px">
+      <input id="codigoProvaAluno" placeholder="Código ex: MAT2A">
+      <button class="btn-go" onclick="abrirProvaComCodigo()" style="width:100%;padding:14px">📝 ABRIR PROVA ONLINE</button>
       <div id="listaCodigosDisponiveis" style="font-size:10px;color:#666;margin-top:8px"></div>
     </div>
   </div>
-  <div id="areaProva" class="card" style="display:none;max-width:900px">
-    <h3 id="titProva"></h3><p id="infoAl" style="color:#888"></p>
-    <div id="cronometro" style="font-size:20px;color:#00ff88;font-weight:900;text-align:center;background:#000;padding:8px;border-radius:10px">⏰ --:--:--</div>
-    <div id="areaPDF" style="background:#222;padding:15px;border-radius:12px;margin:15px 0;text-align:center;border:2px dashed #00ff88">
-      <h4 style="color:#00ff88;margin:0 0 10px">📄 PROVA EM PDF</h4><p id="nomePDF" style="font-size:12px;color:#888"></p>
-      <a id="btnBaixarPDF" href="#" download="prova.pdf" target="_blank" style="text-decoration:none;display:block"><button class="btn-go" style="width:100%;padding:16px">📥 BAIXAR PROVA</button></a>
-      <div id="pdfViewerDesktop" style="margin-top:10px"><iframe id="pdfView" class="pdf-viewer"></iframe></div>
-    </div>
-    <h4 style="color:#00ff88">Gabarito:</h4><div id="qs"></div>
-    <button class="btn-go" onclick="enviar()" style="width:100%;margin-top:15px">✅ ENVIAR</button>
-  </div>
+  <div id="areaProva" class="card" style="display:none"><h3 id="titProva"></h3><p id="infoAl"></p><div id="cronometro" style="font-size:20px;color:#00ff88;font-weight:900;text-align:center;background:#000;padding:8px;border-radius:10px">⏰ --:--:--</div><div id="listaQuestoesAluno"></div><button class="btn-go" onclick="enviar()" style="width:100%;margin-top:20px;padding:16px">✅ FINALIZAR</button></div>
   <div id="resAl" class="card" style="display:none"></div>
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyCLaqaOCJnkfG4LID1Y5RoFpgEsX9nYGOM",
-  authDomain: "testeapi-1ad07.firebaseapp.com",
-  projectId: "testeapi-1ad07",
-  storageBucket: "testeapi-1ad07.firebasestorage.app",
-  messagingSenderId: "323295128076",
-  appId: "1:323295128076:web:3af167424f75b680f19c29"
-};
+const firebaseConfig = { apiKey: "AIzaSyCLaqaOCJnkfG4LID1Y5RoFpgEsX9nYGOM", authDomain: "testeapi-1ad07.firebaseapp.com", projectId: "testeapi-1ad07", storageBucket: "testeapi-1ad07.firebasestorage.app", messagingSenderId: "323295128076", appId: "1:323295128076:web:3af167424f75b680f19c29" };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-let profLogado=null, provas=[], resultados=[], pdfAtual=null, provaAtual=null, respostas=[], timerInterval=null, editandoSalaId=null, alunoLogado=null;
+let profLogado=null, provas=[], resultados=[], provaAtual=null, respostas=[], timerInterval=null, editandoSalaId=null, alunoLogado=null, questoesAtuais=[];
 window.todasProvas=[];
 const ADMIN_USER = "gardoni";
-const ADMIN_PASS = "Rga@193319";
 function norm(s){return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'_');}
-function parseDataLocal(str){
-  if(!str) return null;
-  try{
-    let [data, hora] = str.split('T');
-    let [ano, mes, dia] = data.split('-').map(Number);
-    let [h, m] = hora.split(':').map(Number);
-    return new Date(ano, mes-1, dia, h, m);
-  }catch{ return new Date(str); }
-}
-window.showSubAdmin = function(t){
-  document.getElementById('adminProf').style.display = t=='prof'?'block':'none';
-  document.getElementById('adminAlunos').style.display = t=='alunos'?'block':'none';
-  document.getElementById('btnSubProf').classList.toggle('activeSub', t=='prof');
-  document.getElementById('btnSubAlunos').classList.toggle('activeSub', t=='alunos');
-  if(t=='alunos') listarAlunosAdmin();
-}
-async function carregarSalasParaAluno(){
-  try{
-    let snap=await getDocs(collection(db,"provas"));
-    window.todasProvas=[]; snap.forEach(d=>window.todasProvas.push(d.data()));
-    document.getElementById('statusFirebase').innerText="✅ Conectado - "+window.todasProvas.length+" provas";
-    if(window.todasProvas.length>0){
-      document.getElementById('listaCodigosDisponiveis').innerText="Códigos ativos: "+window.todasProvas.map(p=>p.senha).join(', ');
-    }
-  }catch(e){ document.getElementById('statusFirebase').innerText="❌ Erro: "+e.message; }
-}
-window.showTab = function(t){
-  if(t=='prof'){if(!profLogado){loginProf.style.display='block'; areaProf.style.display='none';}else{loginProf.style.display='none'; areaProf.style.display='block';} areaAluno.style.display='none';}
-  else{areaAluno.style.display='block'; areaProf.style.display='none'; loginProf.style.display='none'; carregarSalasParaAluno(); verificarAlunoLogado();}
-  tabProf.classList.toggle('active', t=='prof'); tabAluno.classList.toggle('active', t=='aluno');
-}
-function verificarAlunoLogado(){
-  let salvo=localStorage.getItem('aluno_logado');
-  if(salvo){
-    alunoLogado=JSON.parse(salvo);
-    document.getElementById('nomeAlunoLogado').innerText=alunoLogado.login;
-    document.getElementById('stepLoginAluno').classList.remove('active');
-    document.getElementById('stepCodigoProva').classList.add('active');
-  }
-}
-window.loginAluno = async function(){
-  let login=alunoLoginInput.value.trim().toLowerCase(), senha=alunoSenhaAluno.value.trim();
-  if(login.length<3||senha.length<3){msgAluno.innerText="Login e senha min 3";return;}
-  let id=norm(login);
-  let snap=await getDoc(doc(db,"alunos",id));
-  if(!snap.exists()){
-    let novo={id:id, login:login, nome:login.toUpperCase(), senha:senha, bloqueado:false, criadoPor:"auto", criadoEm:new Date().toLocaleString(), timestamp:Date.now()};
-    await setDoc(doc(db,"alunos",id),novo);
-    alunoLogado=novo;
-    localStorage.setItem('aluno_logado', JSON.stringify(alunoLogado));
-  }else{
-    let dados=snap.data();
-    if(dados.bloqueado){msgAluno.innerText="⛔ Bloqueado";return;}
-    if(dados.senha!=senha){msgAluno.innerText="Senha incorreta";return;}
-    alunoLogado=dados;
-    localStorage.setItem('aluno_logado', JSON.stringify(alunoLogado));
-  }
-  document.getElementById('nomeAlunoLogado').innerText=alunoLogado.login;
-  document.getElementById('stepLoginAluno').classList.remove('active');
-  document.getElementById('stepCodigoProva').classList.add('active');
-  await carregarSalasParaAluno();
-}
-window.sairAluno = function(){alunoLogado=null; localStorage.removeItem('aluno_logado'); document.getElementById('stepCodigoProva').classList.remove('active'); document.getElementById('stepLoginAluno').classList.add('active');}
-window.criarAlunoPeloMaster = async function(){
-  if(profLogado.id!==ADMIN_USER){alert("Só MASTER");return;}
-  let login=novoAlunoLogin.value.trim().toLowerCase(), senha=novoAlunoSenha.value.trim();
-  if(login.length<3||senha.length<3){alert("Min 3");return;}
-  let id=norm(login);
-  await setDoc(doc(db,"alunos",id),{id:id, login:login, nome:login.toUpperCase(), senha:senha, bloqueado:false, criadoPor:profLogado.usuario, criadoEm:new Date().toLocaleString(), timestamp:Date.now()},{merge:true});
-  alert("✅ Aluno "+login+" criado!"); novoAlunoLogin.value=""; novoAlunoSenha.value=""; listarAlunosAdmin();
-}
-async function listarAlunosAdmin(){
-  if(!profLogado || profLogado.id!==ADMIN_USER) return;
-  let snap=await getDocs(collection(db,"alunos")); let lista=[]; snap.forEach(d=>lista.push(d.data()));
-  lista.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-  document.getElementById('totalAlunosAdmin').innerText=lista.length;
-  document.getElementById('listaAlunosAdmin').innerHTML=lista.map(a=>`
-    <div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px;border-left:4px solid ${a.bloqueado?'#ff3d00':'#2962ff'}">
-      <div style="display:flex;justify-content:space-between;flex-wrap:wrap">
-        <div><b>${a.login}</b> ${a.bloqueado?'<span class="badge badge-blocked">BLOQUEADO</span>':'<span class="badge badge-active">ATIVO</span>'}<br><small>${a.criadoEm||''}</small></div>
-        <div style="display:flex;gap:4px;margin-top:6px">
-          ${a.bloqueado?`<button class="btn-unblock" onclick="desbloquearAluno('${a.id}')">🔓</button>`:`<button class="btn-block" onclick="bloquearAluno('${a.id}')">🚫</button>`}
-          <button class="btn-edit" onclick="resetarSenhaAluno('${a.id}')">🔑</button>
-          <button class="btn-red" onclick="apagarAluno('${a.id}')">🗑️</button>
-        </div>
-      </div>
-    </div>`).join('') || "<small>Nenhum aluno</small>";
-}
-window.bloquearAluno = async function(id){let s=await getDoc(doc(db,"alunos",id)); await setDoc(doc(db,"alunos",id),{...s.data(), bloqueado:true},{merge:true}); listarAlunosAdmin();}
-window.desbloquearAluno = async function(id){let s=await getDoc(doc(db,"alunos",id)); await setDoc(doc(db,"alunos",id),{...s.data(), bloqueado:false},{merge:true}); listarAlunosAdmin();}
-window.apagarAluno = async function(id){if(!confirm("Deletar "+id+"?"))return; await deleteDoc(doc(db,"alunos",id)); listarAlunosAdmin();}
-window.resetarSenhaAluno = async function(id){let n=prompt("Nova senha para "+id+":"); if(!n||n.length<3)return; let s=await getDoc(doc(db,"alunos",id)); await setDoc(doc(db,"alunos",id),{...s.data(), senha:n},{merge:true}); alert("Senha: "+n);}
-
-window.abrirProvaComCodigo = async function(){
-  let codigo=codigoProvaAluno.value.trim().toLowerCase();
-  if(!codigo){alert("Digite o código");return;}
-  let lista=window.todasProvas||[];
-  let p=lista.find(x=> x.senha.trim().toLowerCase() == codigo);
-  if(!p){alert("Código '"+codigoProvaAluno.value+"' não encontrado");return;}
-  let agora=new Date();
-  let ini=parseDataLocal(p.inicio);
-  let fim=parseDataLocal(p.fim);
-  if(!ini||!fim){alert("Prova sem horário configurado");return;}
-  function formatarData(d){ return d.toLocaleDateString('pt-BR') + " às " + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
-  if(agora < ini){
-    alert(`⏰ CALMA! Essa prova ainda não começou.\n\n📝 Prova: ${p.nome}\n▶️ Início: ${formatarData(ini)}\n⏹️ Fim: ${formatarData(fim)}\n\nAgora: ${formatarData(agora)}\n\nVolte no horário marcado!`);
-    return;
-  }
-  if(agora > fim){
-    alert(`⛔ ENCERRADA! Essa prova já terminou.\n\n📝 Prova: ${p.nome}\n▶️ Começou: ${formatarData(ini)}\n⏹️ Terminou: ${formatarData(fim)}\n\nAgora: ${formatarData(agora)}`);
-    return;
-  }
-  let maxPermitido = p.maxTentativas;
-  if(maxPermitido === undefined) maxPermitido = 0;
-  if(maxPermitido!== 0){
-    let idResultado=`${p.id}_${norm(alunoLogado.login)}`;
-    try{
-      let snap = await getDoc(doc(db,"resultados",idResultado));
-      if(snap.exists()){
-        let tentativasAtuais = snap.data().tentativas || 1;
-        if(tentativasAtuais >= maxPermitido){
-          document.getElementById('alunoLogin').style.display='none';
-          document.getElementById('areaProva').style.display='none';
-          resAl.style.display='block';
-          resAl.innerHTML = `
-            <h3 style="color:#ff3d00">⛔ LIMITE ATINGIDO</h3>
-            <p>Você já fez <b>${tentativasAtuais} de ${maxPermitido}</b> tentativas na prova <b>${p.nome}</b>.</p>
-            <p>Sua última nota: <b>${snap.data().acertos}/${snap.data().total} - ${snap.data().nota}%</b></p>
-            <br>
-            <button class="btn-red" onclick="location.reload()" style="width:100%;padding:14px">🚪 SAIR</button>
-          `;
-          return;
-        }
-      }
-    }catch(e){}
-  }
-  provaAtual=p; respostas=new Array(p.qtd).fill('');
-  let maxTxt = (p.maxTentativas===0 || p.maxTentativas===undefined)? "♾️ INFINITO" : `${p.maxTentativas}x`;
-  titProva.innerText=`${p.nome} | Código: ${p.senha} | ${maxTxt}`;
-  infoAl.innerText=`Aluno: ${alunoLogado.login}`;
-  if(p.pdf){document.getElementById('nomePDF').innerText=p.nome+".pdf"; let btn=document.getElementById('btnBaixarPDF'); btn.href=p.pdf; btn.download=`${p.nome}.pdf`; pdfView.src=p.pdf;}
-  let c=qs; c.innerHTML=''; for(let i=0;i<p.qtd;i++){c.innerHTML+=`<div class="q-item"><b>${i+1}</b><div><span class="opt" id="q${i}A" onclick="marcar(${i},'A')">A</span><span class="opt" id="q${i}B" onclick="marcar(${i},'B')">B</span><span class="opt" id="q${i}C" onclick="marcar(${i},'C')">C</span><span class="opt" id="q${i}D" onclick="marcar(${i},'D')">D</span></div></div>`;}
-  document.getElementById('alunoLogin').style.display='none'; areaProva.style.display='block';
-  if(timerInterval) clearInterval(timerInterval);
-  timerInterval=setInterval(()=>{let d=fim-new Date(); if(d<=0){clearInterval(timerInterval); enviar(); return;} let h=Math.floor(d/3600000), m=Math.floor((d%3600000)/60000), s=Math.floor((d%60000)/1000); cronometro.innerText=`⏰ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000);
-}
-
-window.criarProfessor = async function(){
-  if(profLogado.id!==ADMIN_USER){alert("Só MASTER");return;}
-  let u=novoProfNome.value.trim(), s=novoProfSenha.value.trim();
-  if(u.length<3||s.length<4){alert("Min 3 e 4");return;}
-  let id=norm(u); if(id===ADMIN_USER)return;
-  if((await getDoc(doc(db,"professores",id))).exists()){alert("Já existe");return;}
-  await setDoc(doc(db,"professores",id),{id:id, usuario:u, senha:s, isAdmin:false, bloqueado:false, criadoEm:new Date().toLocaleString(), timestamp:Date.now()});
-  alert("✅ Professor criado"); novoProfNome.value=""; novoProfSenha.value=""; listarProfessores();
-}
-async function listarProfessores(){
-  let snap=await getDocs(collection(db,"professores")); let lista=[]; snap.forEach(d=>lista.push(d.data()));
-  lista.sort((a,b)=> (b.isAdmin?1:0)-(a.isAdmin?1:0));
-  document.getElementById('listaProfessores').innerHTML=lista.map(p=>`<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px;border-left:4px solid ${p.bloqueado?'#ff3d00':p.isAdmin?'#ff1744':'#00e676'}"><div style="display:flex;justify-content:space-between;flex-wrap:wrap"><div><b>${p.usuario}</b> ${p.isAdmin?'<span class="badge badge-admin">MASTER</span>':p.bloqueado?'<span class="badge badge-blocked">BLOQUEADO</span>':'<span class="badge badge-active">ATIVO</span>'}<br><small>${p.id}</small></div><div style="display:flex;gap:4px;margin-top:6px">${p.id!==ADMIN_USER?`${p.bloqueado?`<button class="btn-unblock" onclick="desbloquearProfessor('${p.id}')">🔓</button>`:`<button class="btn-block" onclick="bloquearProfessor('${p.id}')">🚫</button>`}<button class="btn-edit" onclick="resetarSenha('${p.id}')">🔑</button><button class="btn-red" onclick="apagarProfessor('${p.id}')">🗑️</button>`:``}</div></div></div>`).join('');
-}
-window.bloquearProfessor = async function(id){let s=await getDoc(doc(db,"professores",id)); await setDoc(doc(db,"professores",id),{...s.data(), bloqueado:true},{merge:true}); listarProfessores();}
-window.desbloquearProfessor = async function(id){let s=await getDoc(doc(db,"professores",id)); await setDoc(doc(db,"professores",id),{...s.data(), bloqueado:false},{merge:true}); listarProfessores();}
-window.apagarProfessor = async function(id){if(id===ADMIN_USER)return; if(!confirm("Deletar?"))return; await deleteDoc(doc(db,"professores",id)); listarProfessores();}
-window.resetarSenha = async function(id){let n=prompt("Nova senha:"); if(!n||n.length<4)return; let s=await getDoc(doc(db,"professores",id)); await setDoc(doc(db,"professores",id),{...s.data(), senha:n},{merge:true}); alert("Alterada");}
-window.loginProfessor = async function(){
-  let u=profNome.value.trim(), s=profSenha.value.trim(); let id=norm(u);
-  if(!u||!s){msgLogin.innerText="Preencha";return;}
-  let snap=await getDoc(doc(db,"professores",id));
-  if(id===ADMIN_USER &&!snap.exists()){await setDoc(doc(db,"professores",ADMIN_USER),{id:ADMIN_USER, usuario:"gardoni", senha:ADMIN_PASS, isAdmin:true, bloqueado:false, timestamp:Date.now()}); snap=await getDoc(doc(db,"professores",ADMIN_USER));}
-  if(!snap.exists()){msgLogin.innerText="Usuário não encontrado";return;}
-  let dados=snap.data(); if(dados.bloqueado){msgLogin.innerText="⛔ Bloqueado";return;} if(dados.senha!=s){msgLogin.innerText="Senha incorreta";return;}
-  profLogado=dados; localStorage.setItem('prof_logado', JSON.stringify(profLogado));
-  nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; badgeAdmin.innerHTML=profLogado.isAdmin?'<span class="badge badge-admin">MASTER</span>':'<span class="badge badge-prof">PROF</span>';
-  loginProf.style.display='none'; areaProf.style.display='block'; document.getElementById('areaAdmin').style.display=(profLogado.isAdmin)?'block':'none'; if(profLogado.isAdmin){listarProfessores(); listarAlunosAdmin();} carregarDaNuvem();
-}
+function parseDataLocal(str){ if(!str) return null; try{ let [data, hora] = str.split('T'); let [ano, mes, dia] = data.split('-').map(Number); let [h, m] = hora.split(':').map(Number); return new Date(ano, mes-1, dia, h, m); }catch{ return new Date(str); } }
+const PROVA_2ANO = [
+  {pergunta:"O que significa 4! (4 fatorial)?", A:"4+3+2+1", B:"4 x 4 x 4 x 4", C:"4 x 3 x 2 x 1", D:"4 + 4", gab:"C"},
+  {pergunta:"Quanto vale 2! + 3!", A:"5!", B:"5", C:"8", D:"10", gab:"C"},
+  {pergunta:"Simplifique: 7! / 6!", A:"1", B:"7", C:"42", D:"6", gab:"B"},
+  {pergunta:"Quantos números de 4 algarismos diferentes pode formar com 1,2,3,4?", A:"24", B:"12", C:"4", D:"16", gab:"A"},
+  {pergunta:"Quantos anagramas tem a palavra LIVRO?", A:"25", B:"120", C:"60", D:"10", gab:"B"},
+  {pergunta:"Quantas senhas de 3 letras diferentes posso fazer com A,B,C?", A:"6", B:"9", C:"3", D:"27", gab:"A"},
+  {pergunta:"Em um grupo de 8 alunos, escolher 3 para apresentar. Quantas formas?", A:"24", B:"56", C:"336", D:"8", gab:"B"},
+  {pergunta:"De quantas formas 5 pessoas podem ocupar 3 cadeiras (ordem importa)?", A:"60", B:"10", C:"15", D:"125", gab:"A"},
+  {pergunta:"Quantas placas com duas letras diferentes (A,B,C,D,E) e 2 números diferentes (0 até 9) podemos formar?", A:"2000", B:"1800", C:"100", D:"200", gab:"B"},
+  {pergunta:"Em um jogo, existem 25 números disponíveis, e cada cartão deve ser preenchido com 15 números diferentes. Considerando que a ordem dos números não importa, quantos cartões diferentes podem ser formados?", A:"15!/25!", B:"25!/(15! x 10!)", C:"15!/(25! x 10!)", D:"25!/10!", gab:"B"},
+];
+window.carregarProva2Ano = function(){ let txt = ""; PROVA_2ANO.forEach((q,i)=>{ txt += `${i+1}) ${q.pergunta}\nA) ${q.A}\nB) ${q.B}\nC) ${q.C}\nD) ${q.D}\nGAB: ${q.gab}\n\n`; }); document.getElementById('textoQuestoes').value = txt; previewQuestoes(); }
+function parseQuestoesDoTexto(texto){ let questoes = []; let blocos = texto.split(/\n\s*\n/); if(blocos.length < 2) blocos = texto.split(/\n(?=\d+\))/); blocos.forEach(bloco=>{ bloco = bloco.trim(); if(!bloco) return; let linhas = bloco.split('\n').map(l=>l.trim()).filter(l=>l); if(linhas.length < 2) return; let pergunta = linhas[0].replace(/^\d+\)\s*/, '').trim(); let q = {pergunta: pergunta, A:"", B:"", C:"", D:"", gab:"A"}; linhas.forEach(l=>{ let m = l.match(/^A\)\s*(.*)/i); if(m) q.A = m[1]; m = l.match(/^B\)\s*(.*)/i); if(m) q.B = m[1]; m = l.match(/^C\)\s*(.*)/i); if(m) q.C = m[1]; m = l.match(/^D\)\s*(.*)/i); if(m) q.D = m[1]; m = l.match(/GAB:\s*([A-D])/i); if(m) q.gab = m[1].toUpperCase(); }); if(q.A && q.B) questoes.push(q); }); return questoes; }
+window.previewQuestoes = function(){ let texto = document.getElementById('textoQuestoes').value; let qs = parseQuestoesDoTexto(texto); questoesAtuais = qs; let html = `<h4 style="color:#00ff88">${qs.length} questões detectadas</h4>`; qs.forEach((q,i)=>{ html += `<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><b>${i+1}) ${q.pergunta} [${q.gab}]</b><br><small>A) ${q.A} | B) ${q.B} | C) ${q.C} | D) ${q.D}</small></div>`; }); document.getElementById('previewArea').innerHTML = html; }
+async function carregarSalasParaAluno(){ try{ let snap=await getDocs(collection(db,"provas")); window.todasProvas=[]; snap.forEach(d=>window.todasProvas.push(d.data())); document.getElementById('statusFirebase').innerText="✅ "+window.todasProvas.length+" provas online"; document.getElementById('listaCodigosDisponiveis').innerText="Códigos: "+window.todasProvas.map(p=>p.senha).join(', '); }catch(e){ document.getElementById('statusFirebase').innerText="❌ "+e.message; } }
+window.showTab = function(t){ if(t=='prof'){if(!profLogado){loginProf.style.display='block'; areaProf.style.display='none';}else{loginProf.style.display='none'; areaProf.style.display='block';} areaAluno.style.display='none';} else{areaAluno.style.display='block'; areaProf.style.display='none'; loginProf.style.display='none'; carregarSalasParaAluno();} tabProf.classList.toggle('active', t=='prof'); tabAluno.classList.toggle('active', t=='aluno'); }
+window.loginAlunoSimples = function(){ let login = document.getElementById('alunoLoginInput').value.trim(); if(login.length < 2){ document.getElementById('msgAluno').innerText="Digite seu nome"; return; } alunoLogado = {login: login, id: norm(login)}; document.getElementById('msgAluno').innerText = "✅ Olá "+login+"! Agora digite o código"; }
+window.loginProfessor = async function(){ let u=profNome.value.trim(), s=profSenha.value.trim(); let id=norm(u); if(!u||!s){msgLogin.innerText="Preencha";return;} let snap=await getDoc(doc(db,"professores",id)); if(id===ADMIN_USER &&!snap.exists()){await setDoc(doc(db,"professores",ADMIN_USER),{id:ADMIN_USER, usuario:"gardoni", senha:"Rga@193319", isAdmin:true, timestamp:Date.now()}); snap=await getDoc(doc(db,"professores",ADMIN_USER));} if(!snap.exists()){msgLogin.innerText="Não encontrado";return;} let dados=snap.data(); if(dados.senha!=s){msgLogin.innerText="Senha errada";return;} profLogado=dados; localStorage.setItem('prof_logado', JSON.stringify(profLogado)); nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; loginProf.style.display='none'; areaProf.style.display='block'; carregarDaNuvem(); }
 window.sair = function(){profLogado=null; localStorage.removeItem('prof_logado'); areaProf.style.display='none'; loginProf.style.display='block';}
-window.loadPDF = function(i){let f=i.files[0]; if(!f) return; let r=new FileReader(); r.onload=e=>{pdfAtual=e.target.result; pdfInfo.innerText=`✅ ${f.name}`;}; r.readAsDataURL(f);}
-async function carregarDaNuvem(){
-  if(!profLogado) return;
-  let snapProvas=await getDocs(collection(db,"provas")); provas=[]; snapProvas.forEach(d=>{let p=d.data(); if(p.professorId==profLogado.id) provas.push(p);});
-  let snapRes=await getDocs(collection(db,"resultados")); let meusIds=new Set(provas.map(p=>p.id)); resultados=[]; snapRes.forEach(d=>{let r=d.data(); if(meusIds.has(r.provaId)) resultados.push(r);});
-  renderSalas(); renderRes(); await carregarSalasParaAluno();
-}
-window.editarSala = function(id){let p=provas.find(x=>x.id==id); if(!p) return; editandoSalaId=id; nomeProva.value=p.nome; senhaUnica.value=p.senha; dataInicio.value=p.inicio; dataFim.value=p.fim; qtdQuestoes.value=p.qtd; gabaritoProf.value=p.gabarito.join(','); pdfAtual=p.pdf; document.getElementById('maxTentativas').value=p.maxTentativas===0?'':p.maxTentativas; tituloFormSala.innerText="✏️ Editando: "+p.nome; btnSalvarSala.innerText="💾 ATUALIZAR"; btnCancelarSala.style.display="block"; window.scrollTo({top:0, behavior:'smooth'});}
-window.cancelarEdicaoSala = function(){editandoSalaId=null; nomeProva.value=""; senhaUnica.value=""; dataInicio.value=""; dataFim.value=""; qtdQuestoes.value=""; gabaritoProf.value=""; pdfAtual=null; pdfInfo.innerText=""; document.getElementById('maxTentativas').value=""; tituloFormSala.innerText="+ Nova Prova - Código da Sala"; btnSalvarSala.innerText="💾 SALVAR PROVA"; btnCancelarSala.style.display="none";}
-window.salvarProva = async function(){
-  let nome=nomeProva.value.trim(), senha=senhaUnica.value.trim(), ini=dataInicio.value, fim=dataFim.value, qtd=parseInt(qtdQuestoes.value), gab=gabaritoProf.value.split(',').map(s=>s.trim().toUpperCase()).filter(s=>s);
-  if(!nome||!senha||!ini||!fim||!qtd||!gab.length){alert("Preencha tudo");return;}
-  let id=editandoSalaId||`${profLogado.id}_${norm(senha)}`;
-  let valorCampo=document.getElementById('maxTentativas').value;
-  let maxTent = valorCampo===""? 0 : parseInt(valorCampo);
-  if(isNaN(maxTent)) maxTent=0;
-  let obj={id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qtd, gabarito:gab, pdf:pdfAtual||"", professorId:profLogado.id, professorNome:profLogado.usuario, data:new Date().toLocaleString(), timestamp:Date.now(), maxTentativas:maxTent};
-  await setDoc(doc(db,"provas",id),obj,{merge:true}); alert("✅ Prova salva! Código: "+senha+" | Tentativas: "+(maxTent===0?"INFINITAS":maxTent)); cancelarEdicaoSala(); await carregarDaNuvem();
-}
-function renderSalas(){
-  let div=listaProvas; document.getElementById('totalSalas').innerText=provas.length;
-  if(!provas.length){div.innerHTML='<small>Nenhuma sala</small>';return;}
-  let filtro=document.getElementById('filtroSala'); let atual=filtro.value;
-  filtro.innerHTML='<option value="TODAS">TODAS</option>' + provas.map(p=>`<option value="${p.id}">${p.nome} (${p.senha})</option>`).join('');
-  if(atual) filtro.value=atual;
-  div.innerHTML=provas.map(p=>{
-    let qtdAlunos=resultados.filter(r=>r.provaId==p.id).length;
-    let tentTxt = (p.maxTentativas===0 || p.maxTentativas===undefined)? "♾️ INFINITO" : p.maxTentativas+"x";
-    return `<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div><b style="color:#00ff88">${p.nome}</b> <span class="badge badge-green">${qtdAlunos} alunos</span> <span class="badge badge-prof">${tentTxt}</span><br><small>Código: <b style="color:#ffeb3b">${p.senha}</b></small></div><div><button class="btn-edit" onclick="editarSala('${p.id}')">✏️</button><button class="btn-red" onclick="apagarSala('${p.id}')">🗑️</button></div></div></div>`;
-  }).join('');
-}
+async function carregarDaNuvem(){ if(!profLogado) return; let snapProvas=await getDocs(collection(db,"provas")); provas=[]; snapProvas.forEach(d=>{let p=d.data(); if(p.professorId==profLogado.id) provas.push(p);}); let snapRes=await getDocs(collection(db,"resultados")); let meusIds=new Set(provas.map(p=>p.id)); resultados=[]; snapRes.forEach(d=>{let r=d.data(); if(meusIds.has(r.provaId)) resultados.push(r);}); renderSalas(); renderRes(); await carregarSalasParaAluno(); }
+window.salvarProva = async function(){ let nome=nomeProva.value.trim(), senha=senhaUnica.value.trim(), ini=dataInicio.value, fim=dataFim.value; if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;} let texto = document.getElementById('textoQuestoes').value; let qs = parseQuestoesDoTexto(texto); if(qs.length==0){alert("Nenhuma questão!");return;} let id=`${profLogado.id}_${norm(senha)}`; let obj={ id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qs.length, gabarito:qs.map(q=>q.gab), questoes:qs, professorId:profLogado.id, professorNome:profLogado.usuario, timestamp:Date.now(), tipo:"online" }; await setDoc(doc(db,"provas",id),obj,{merge:true}); alert(`✅ Prova salva! ${qs.length} questões | Código: ${senha}`); await carregarDaNuvem(); }
+function renderSalas(){ let div=listaProvas; document.getElementById('totalSalas').innerText=provas.length; if(!provas.length){div.innerHTML='<small>Nenhuma</small>';return;} let filtro=document.getElementById('filtroSala'); filtro.innerHTML='<option value="TODAS">TODAS</option>' + provas.map(p=>`<option value="${p.id}">${p.nome} (${p.senha})</option>`).join(''); div.innerHTML=provas.map(p=>`<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div><b style="color:#00ff88">${p.nome}</b> <span style="background:#00ff88;color:#000;padding:2px 6px;border-radius:10px;font-size:10px">${p.qtd}q</span><br><small>Código: <b style="color:#ffeb3b">${p.senha}</b></small></div><div><button class="btn-red" onclick="apagarSala('${p.id}')">🗑️</button></div></div></div>`).join(''); }
 window.apagarSala = async function(id){if(!confirm("Apagar?"))return; await deleteDoc(doc(db,"provas",id)); await carregarDaNuvem();}
-window.editarResultado = function(id){let r=resultados.find(x=>x.id==id); editId.value=r.id; editNome.value=r.nome; editCodigo.value=r.codigo; editAcertos.value=r.acertos; editTotal.value=r.total; editNota.value=r.nota; editRespostas.value=r.respostas; document.getElementById('modalEditar').style.display='flex';}
-window.fecharModal = function(){document.getElementById('modalEditar').style.display='none';}
-window.salvarEdicaoResultado = async function(){let id=editId.value; let obj={nome:editNome.value.toUpperCase(), codigo:editCodigo.value.toUpperCase(), acertos:parseInt(editAcertos.value), total:parseInt(editTotal.value), nota:parseFloat(editNota.value).toFixed(1), respostas:editRespostas.value.toUpperCase(), data:new Date().toLocaleString()+" (editado)", timestamp:Date.now()}; let r=resultados.find(x=>x.id==id); await setDoc(doc(db,"resultados",id),{...r,...obj},{merge:true}); fecharModal(); await carregarDaNuvem();}
-window.marcar = function(q,l){respostas[q]=l; ['A','B','C','D'].forEach(x=>document.getElementById(`q${q}${x}`).classList.toggle('sel',x==l));}
-window.enviar = async function(){
- if(timerInterval) clearInterval(timerInterval);
- let idResultado=`${provaAtual.id}_${norm(alunoLogado.login)}`;
- let snapExistente = null;
- try { snapExistente = await getDoc(doc(db,"resultados",idResultado)); } catch(e){}
- let maxPermitido = provaAtual.maxTentativas;
- if(maxPermitido === undefined) maxPermitido = 0;
-
- // TRAVA EXTRA DE HORÁRIO NO ENVIO
- let agoraCheck = new Date();
- let fimCheck = parseDataLocal(provaAtual.fim);
- if(agoraCheck > fimCheck){
-   areaProva.style.display='none';
-   resAl.style.display='block';
-   resAl.innerHTML = `<h3 style="color:#ff3d00">⛔ FORA DO HORÁRIO</h3><p>Tempo esgotado às ${fimCheck.toLocaleString('pt-BR')}</p><br><button class="btn-red" onclick="location.reload()" style="width:100%;padding:14px">🚪 SAIR</button>`;
-   return;
- }
-
- if(maxPermitido!== 0 && snapExistente && snapExistente.exists()){
-   let tentativasAtuais = snapExistente.data().tentativas || 1;
-   if(tentativasAtuais >= maxPermitido){
-     areaProva.style.display='none';
-     resAl.style.display='block';
-     resAl.innerHTML = `
-       <h3 style="color:#ff3d00">⛔ LIMITE ATINGIDO</h3>
-       <p>Você já atingiu <b>${maxPermitido} tentativas</b>!</p>
-       <p>Última nota: <b>${snapExistente.data().acertos}/${snapExistente.data().total} - ${snapExistente.data().nota}%</b></p>
-       <br>
-       <button class="btn-red" onclick="location.reload()" style="width:100%;padding:14px">🚪 SAIR</button>
-     `;
-     return;
-   }
- }
- let ac=0; for(let i=0;i<provaAtual.qtd;i++) if(respostas[i]==provaAtual.gabarito[i]) ac++;
- let perc=(ac/provaAtual.qtd*100).toFixed(1);
- let tentativas = 1;
- if(snapExistente && snapExistente.exists()){
-   tentativas = (snapExistente.data().tentativas || 1) + 1;
- }
- let novo={
-   id:idResultado,
-   provaId:provaAtual.id,
-   provaNome:provaAtual.nome,
-   professorId:provaAtual.professorId,
-   professorNome:provaAtual.professorNome,
-   nome:alunoLogado.login.toUpperCase(),
-   loginAluno:alunoLogado.login,
-   codigo:alunoLogado.login,
-   acertos:ac,
-   total:provaAtual.qtd,
-   nota:perc,
-   respostas:respostas.join(','),
-   data:new Date().toLocaleString() + (maxPermitido===0? ` (tentativa ${tentativas} - ♾️)` : ` (tentativa ${tentativas}/${maxPermitido})`),
-   timestamp:Date.now(),
-   tentativas:tentativas
- };
- await setDoc(doc(db,"resultados",idResultado),novo,{merge:true});
- areaProva.style.display='none'; resAl.style.display='block';
- let msgTent = maxPermitido===0? `Tentativa ${tentativas} - Pode refazer até acabar o tempo ♾️` : `Tentativa ${tentativas} de ${maxPermitido}`;
- let podeRefazer = (maxPermitido===0 || tentativas < maxPermitido);
- resAl.innerHTML=`<h3 style="color:#00ff88">✅ Enviado!</h3><b>${alunoLogado.login}</b> - ${ac}/${provaAtual.qtd} = ${perc}%<br><small>${msgTent}</small><br><br>
- ${podeRefazer? `<button class="btn-go" onclick="location.reload()" style="width:100%;padding:14px">🔄 FAZER NOVAMENTE</button>` : `<button class="btn-red" style="width:100%;padding:14px" disabled>⛔ LIMITE ATINGIDO</button>`}
- <button class="btn-sec" onclick="location.reload()" style="width:100%;padding:14px;margin-top:6px">🚪 SAIR</button>`;
-}
-window.limparDuplicados = async function(){
-  if(!profLogado){alert("Faça login");return;}
-  if(!confirm("Apagar duplicados e deixar só o último de cada aluno por prova?"))return;
-  let snap=await getDocs(collection(db,"resultados"));
-  let mapa={}; let deletar=[];
-  snap.forEach(d=>{
-    let r=d.data();
-    if(r.professorId!=profLogado.id && profLogado.id!=ADMIN_USER) return;
-    let chave=r.provaId+"_"+norm(r.loginAluno||r.nome||r.codigo);
-    if(!mapa[chave] || (r.timestamp||0) > (mapa[chave].timestamp||0)){
-      if(mapa[chave]) deletar.push(mapa[chave].id);
-      mapa[chave]=r;
-    } else {
-      deletar.push(r.id);
-    }
-  });
-  for(let id of deletar){ await deleteDoc(doc(db,"resultados",id)); }
-  alert(`✅ Limpeza feita! ${deletar.length} duplicados apagados.`);
-  await carregarDaNuvem();
-}
-window.renderRes = function(){
- let div=tabRes; let filtro=document.getElementById('filtroSala')?.value || "TODAS";
- let lista=filtro=="TODAS"?resultados:resultados.filter(r=>r.provaId==filtro);
- if(!lista.length){div.innerHTML='<small>Nenhum resultado</small>';return;}
- let ord=[...lista].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
- div.innerHTML=`<table><tr><th>ALUNO</th><th>NOTA</th><th>AÇÃO</th></tr>`+ord.map(r=>`<tr><td><b>${r.nome}</b><br><small>${r.loginAluno} ${r.tentativas>1?`(${r.tentativas}x)`:""}</small></td><td>${r.acertos}/${r.total} ${r.nota}%</td><td><button class="btn-edit" onclick="editarResultado('${r.id}')">✏️</button><button class="btn-red" onclick="apagarResultado('${r.id}')">🗑️</button></td></tr>`).join('')+`</table>`;
-}
+window.abrirProvaComCodigo = async function(){ if(!alunoLogado){alert("Digite seu nome");return;} let codigo=codigoProvaAluno.value.trim().toLowerCase(); let p=window.todasProvas.find(x=> x.senha.trim().toLowerCase() == codigo); if(!p){alert("Código não encontrado");return;} let agora=new Date(); let ini=parseDataLocal(p.inicio); let fim=parseDataLocal(p.fim); if(agora < ini){alert(`Ainda não começou`);return;} if(agora > fim){alert(`Encerrada`);return;} provaAtual=p; respostas=new Array(p.qtd).fill(''); titProva.innerText=`${p.nome}`; infoAl.innerText=`Aluno: ${alunoLogado.login}`; let htmlQ = ""; p.questoes.forEach((q,i)=>{ htmlQ += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta}</div><div class="q-alt" id="q${i}A" onclick="marcar(${i},'A')"><span class="letra">A</span><span>${q.A}</span></div><div class="q-alt" id="q${i}B" onclick="marcar(${i},'B')"><span class="letra">B</span><span>${q.B}</span></div><div class="q-alt" id="q${i}C" onclick="marcar(${i},'C')"><span class="letra">C</span><span>${q.C}</span></div><div class="q-alt" id="q${i}D" onclick="marcar(${i},'D')"><span class="letra">D</span><span>${q.D}</span></div></div>`; }); document.getElementById('listaQuestoesAluno').innerHTML = htmlQ; document.getElementById('alunoLogin').style.display='none'; areaProva.style.display='block'; if(timerInterval) clearInterval(timerInterval); timerInterval=setInterval(()=>{let d=fim-new Date(); if(d<=0){clearInterval(timerInterval); enviar(); return;} let h=Math.floor(d/3600000), m=Math.floor((d%3600000)/60000), s=Math.floor((d%60000)/1000); cronometro.innerText=`⏰ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000); }
+window.marcar = function(q,l){ respostas[q]=l; ['A','B','C','D'].forEach(x=>{ let el = document.getElementById(`q${q}${x}`); if(el) el.classList.toggle('sel',x==l); }); }
+window.enviar = async function(){ if(timerInterval) clearInterval(timerInterval); let ac=0; for(let i=0;i<provaAtual.qtd;i++) if(respostas[i]==provaAtual.questoes[i].gab) ac++; let perc=(ac/provaAtual.qtd*100).toFixed(1); let idResultado=`${provaAtual.id}_${norm(alunoLogado.login)}_${Date.now()}`; let novo={ id:idResultado, provaId:provaAtual.id, provaNome:provaAtual.nome, professorId:provaAtual.professorId, professorNome:provaAtual.professorNome, nome:alunoLogado.login.toUpperCase(), loginAluno:alunoLogado.login, acertos:ac, total:provaAtual.qtd, nota:perc, respostas:respostas.join(','), gabarito:provaAtual.questoes.map(q=>q.gab).join(','), data:new Date().toLocaleString(), timestamp:Date.now() }; await setDoc(doc(db,"resultados",idResultado),novo,{merge:true}); areaProva.style.display='none'; resAl.style.display='block'; resAl.innerHTML=`<h3 style="color:#00ff88">✅ Enviado!</h3><b style="font-size:24px">${ac}/${provaAtual.qtd} = ${perc}%</b><br><br><button class="btn-sec" onclick="location.reload()" style="width:100%;padding:14px">🚪 SAIR</button>`; }
+window.renderRes = function(){ let div=tabRes; let filtro=document.getElementById('filtroSala')?.value || "TODAS"; let lista=filtro=="TODAS"?resultados:resultados.filter(r=>r.provaId==filtro); if(!lista.length){div.innerHTML='<small>Nenhum</small>';return;} let ord=[...lista].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)); div.innerHTML=`<table><tr><th>ALUNO</th><th>NOTA</th><th>RESP</th><th></th></tr>`+ord.map(r=>`<tr><td><b>${r.nome}</b></td><td>${r.acertos}/${r.total}<br><b style="color:#00ff88">${r.nota}%</b></td><td style="font-size:10px">${r.respostas}</td><td><button class="btn-red" onclick="apagarResultado('${r.id}')">🗑️</button></td></tr>`).join('')+`</table>`; }
 window.apagarResultado = async function(id){if(!confirm("Apagar?"))return; await deleteDoc(doc(db,"resultados",id)); await carregarDaNuvem();}
-window.baixar = function(){
- let filtro=document.getElementById('filtroSala')?.value || "TODAS"; let lista=filtro=="TODAS"?resultados:resultados.filter(r=>r.provaId==filtro);
- if(!lista.length){alert('Vazio');return;}
- let csv='PROFESSOR;PROVA;LOGIN_ALUNO;ACERTOS;TOTAL;NOTA;TENTATIVAS;RESPOSTAS;DATA\n';
- lista.forEach(r=>csv+=`${r.professorNome};${r.provaNome};${r.loginAluno||r.nome};${r.acertos};${r.total};${r.nota}%;${r.tentativas||1};${r.respostas};${r.data}\n`);
- let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=`RESULTADOS_${profLogado.usuario}.csv`; a.click();
-}
-let salvo=localStorage.getItem('prof_logado');
-if(salvo){try{profLogado=JSON.parse(salvo); nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; badgeAdmin.innerHTML=profLogado.isAdmin?'<span class="badge badge-admin">MASTER</span>':'<span class="badge badge-prof">PROF</span>'; loginProf.style.display='none'; areaProf.style.display='block'; document.getElementById('areaAdmin').style.display=(profLogado.isAdmin)?'block':'none'; if(profLogado.isAdmin){listarProfessores(); listarAlunosAdmin();} carregarDaNuvem();}catch{}}
-carregarSalasParaAluno();
+window.baixar = function(){ let filtro=document.getElementById('filtroSala')?.value || "TODAS"; let lista=filtro=="TODAS"?resultados:resultados.filter(r=>r.provaId==filtro); if(!lista.length){alert('Vazio');return;} let csv='PROFESSOR;PROVA;ALUNO;ACERTOS;TOTAL;NOTA;RESPOSTAS;GABARITO;DATA\n'; lista.forEach(r=>csv+=`${r.professorNome};${r.provaNome};${r.loginAluno};${r.acertos};${r.total};${r.nota}%;${r.respostas};${r.gabarito};${r.data}\n`); let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=`RESULTADOS.csv`; a.click(); }
+let salvo=localStorage.getItem('prof_logado'); if(salvo){try{profLogado=JSON.parse(salvo); nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; loginProf.style.display='none'; areaProf.style.display='block'; carregarDaNuvem();}catch{}} carregarSalasParaAluno();
 </script>
 </body>
 </html>
