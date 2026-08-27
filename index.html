@@ -3,17 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVALIACAO - Editor Visual FIX</title>
+<title>AVALIACAO - Editor com Salvar por Questao</title>
 <style>
 body{font-family:system-ui;background:#0a0a0a;color:#fff;text-align:center;padding:10px;margin:0}
 .card{background:#1a1a1a;padding:16px;border-radius:16px;max-width:900px;margin:10px auto;text-align:left;border:1px solid #333}
 input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:none;font-size:15px;box-sizing:border-box;background:#fff;color:#000}
+input:disabled,textarea:disabled{opacity:0.5;background:#ccc}
 button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3px;cursor:pointer;font-size:11px}
-.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-excel{background:#00c853;color:#fff}.btn-sec{background:#333;color:#fff}.btn-img{background:#9c27b0;color:#fff}
+.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-excel{background:#00c853;color:#fff}.btn-sec{background:#333;color:#fff}.btn-img{background:#9c27b0;color:#fff}.btn-save{background:#00ff88;color:#000;font-size:13px;padding:12px 18px}.btn-edit-q{background:#ffca28;color:#000}
 .tab{display:flex;max-width:900px;margin:10px auto;background:#222;border-radius:30px;padding:4px}
 .tab button{flex:1;background:transparent;color:#888;padding:12px}.tab button.active{background:#00ff88;color:#000}
-.q-editor{background:#222;padding:18px;border-radius:12px;margin:18px 0;border:2px solid #444;text-align:left;position:relative}
-.q-editor-header{position:absolute;top:-12px;left:12px;background:#00ff88;color:#000;padding:3px 12px;border-radius:20px;font-weight:900;font-size:13px}
+.q-editor{background:#222;padding:18px;border-radius:12px;margin:18px 0;border:2px solid #444;text-align:left;position:relative;transition:0.3s}
+.q-editor.salva{border-color:#00ff88;background:#1a2a1a}
+.q-editor-header{position:absolute;top:-12px;left:12px;background:#555;color:#fff;padding:3px 12px;border-radius:20px;font-weight:900;font-size:13px}
+.q-editor.salva.q-editor-header{background:#00ff88;color:#000}
 .q-card{background:#222;padding:16px;border-radius:12px;margin:12px 0;border:1px solid #333;text-align:left}
 .q-pergunta{font-size:16px;font-weight:700;margin-bottom:10px;color:#fff;line-height:1.5}
 .q-pergunta img{max-width:100%;border-radius:10px;margin:10px 0;border:2px solid #444;display:block}
@@ -26,10 +29,13 @@ button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3
 .tipo-sel button.active{background:#2962ff;color:#fff}
 .alt-row{display:flex;gap:8px;align-items:center;margin:6px 0}
 .alt-row span{min-width:34px;height:34px;background:#333;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900}
+.status-q{font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;display:inline-block;margin-left:8px}
+.status-pendente{background:#ff5252;color:#fff}
+.status-salva{background:#00ff88;color:#000}
 </style>
 </head>
 <body>
-<h2 style="color:#00ff88">📝 APLICADOR - EDITOR FIX</h2>
+<h2 style="color:#00ff88">📝 EDITOR COM SALVAR POR QUESTÃO</h2>
 <div id="statusFirebase" style="font-size:12px;color:#888">Conectando...</div>
 <div class="tab">
   <button id="tabProf" class="active" onclick="showTab('prof')">👨‍🏫 PROFESSOR</button>
@@ -47,7 +53,8 @@ button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3
     <button class="btn-red" onclick="sair()">SAIR</button>
   </div>
   <div class="card">
-    <h3 style="color:#00ff88">+ MONTAR AVALIAÇÃO - AGORA SALVA CERTO!</h3>
+    <h3 style="color:#00ff88">+ MONTAR AVALIAÇÃO</h3>
+    <p style="font-size:11px;color:#888">1. Digite a pergunta > 2. Clique em 💾 SALVAR QUESTÃO > 3. Só depois clique em + ADICIONAR QUESTÃO</p>
     <input id="nomeProva" placeholder="Nome da Prova">
     <input id="senhaUnica" placeholder="Código: Ex: MAT8A">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><small>INÍCIO</small><input id="dataInicio" type="datetime-local"></div><div><small>FIM</small><input id="dataFim" type="datetime-local"></div></div>
@@ -58,7 +65,8 @@ button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3
       <button class="btn-sec" onclick="limparEditor()" style="flex:1">🗑️ LIMPAR TUDO</button>
     </div>
     <div id="previewArea"></div>
-    <button class="btn-go" onclick="salvarProva()" style="width:100%;margin-top:12px;padding:18px;font-size:15px">💾 SALVAR PROVA ONLINE</button>
+    <button class="btn-go" onclick="salvarProva()" style="width:100%;margin-top:12px;padding:18px;font-size:15px">💾 SALVAR PROVA ONLINE (TODAS AS SALVAS)</button>
+    <div id="contadorSalvas" style="text-align:center;margin-top:8px;font-size:12px;color:#00ff88"></div>
   </div>
   <div class="card"><h3>Minhas Provas (<span id="totalSalas">0</span>)</h3><div id="listaProvas"></div></div>
   <div class="card"><div style="display:flex;justify-content:space-between"><h3>Resultados</h3><select id="filtroSala" onchange="renderRes()"></select></div><div id="tabRes"></div><button class="btn-excel" onclick="baixar()" style="width:100%">📊 BAIXAR EXCEL</button></div>
@@ -66,9 +74,7 @@ button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3
 <div id="areaAluno" style="display:none">
   <div id="alunoLogin" class="card" style="max-width:420px">
     <h3 style="color:#2962ff;text-align:center">👨‍🎓 ALUNO</h3>
-    <input id="alunoLoginInput" placeholder="Seu nome">
-    <button class="btn-blue" onclick="loginAlunoSimples()" style="width:100%">ENTRAR</button>
-    <p id="msgAluno" style="color:#ff5252;text-align:center"></p>
+    <input id="alunoLoginInput" placeholder="Seu nome"><button class="btn-blue" onclick="loginAlunoSimples()" style="width:100%">ENTRAR</button><p id="msgAluno" style="color:#ff5252;text-align:center"></p>
     <div style="margin-top:15px;border-top:1px solid #333;padding-top:10px">
       <input id="codigoProvaAluno" placeholder="Código ex: MAT8A">
       <button class="btn-go" onclick="abrirProvaComCodigo()" style="width:100%;padding:14px">📝 ABRIR PROVA ONLINE</button>
@@ -90,7 +96,20 @@ const ADMIN_USER = "gardoni";
 function norm(s){return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'_');}
 function parseDataLocal(str){ if(!str) return null; try{ let [data, hora] = str.split('T'); let [ano, mes, dia] = data.split('-').map(Number); let [h, m] = hora.split(':').map(Number); return new Date(ano, mes-1, dia, h, m); }catch{ return new Date(str); } }
 let contadorQuestoes = 0;
+
 window.addQuestao = function(dados=null){
+  // Verifica se a última questão foi salva
+  let todas = document.querySelectorAll('#editorQuestoes.q-editor');
+  if(todas.length > 0){
+    let ultima = todas[todas.length-1];
+    if(ultima.dataset.salva!== "true"){
+      alert("⚠️ Salve a questão atual antes de adicionar outra! Clique em 💾 SALVAR QUESTÃO");
+      ultima.scrollIntoView({behavior:'smooth'});
+      ultima.style.borderColor = "#ff5252";
+      setTimeout(()=> ultima.style.borderColor = "#444", 1000);
+      return;
+    }
+  }
   contadorQuestoes++;
   let container = document.getElementById('editorQuestoes');
   let qId = 'q_' + Date.now() + '_' + contadorQuestoes;
@@ -98,45 +117,82 @@ window.addQuestao = function(dados=null){
   div.className = 'q-editor';
   div.id = qId;
   div.dataset.tipo = dados?.tipo || 'multipla';
+  div.dataset.salva = dados? "true" : "false";
+  if(dados) div.classList.add('salva');
   div.innerHTML = `
-    <div class="q-editor-header">QUESTÃO ${container.children.length + 1}</div>
-    <button class="btn-red" style="position:absolute;top:8px;right:8px" onclick="this.parentElement.remove(); atualizarNumeracao()">✕ REMOVER</button>
+    <div class="q-editor-header">QUESTÃO ${container.children.length + 1} <span class="status-q ${dados?'status-salva':'status-pendente'}">${dados?'✅ SALVA':'⏳ PENDENTE'}</span></div>
+    <button class="btn-red" style="position:absolute;top:8px;right:8px" onclick="this.parentElement.remove(); atualizarNumeracao(); atualizarContador()">✕ REMOVER</button>
     <div class="tipo-sel">
-      <button class="btn-sec active" data-tipo="multipla" onclick="setTipo(this)">📝 Múltipla Escolha</button>
-      <button class="btn-sec" data-tipo="dissertativa" onclick="setTipo(this)">✍️ Escrever</button>
+      <button class="btn-sec ${div.dataset.tipo=='multipla'?'active':''}" data-tipo="multipla" onclick="setTipo(this)">📝 Múltipla Escolha</button>
+      <button class="btn-sec ${div.dataset.tipo=='dissertativa'?'active':''}" data-tipo="dissertativa" onclick="setTipo(this)">✍️ Escrever</button>
     </div>
     <label style="color:#888;font-size:12px">PERGUNTA:</label>
-    <textarea class="pergunta-input" placeholder="Digite a pergunta aqui..." rows="3" style="background:#fff;color:#000;font-weight:600">${dados?.pergunta||""}</textarea>
+    <textarea class="pergunta-input" placeholder="Digite a pergunta aqui..." rows="3" style="background:#fff;color:#000;font-weight:600" ${dados?'disabled':''}>${dados?.pergunta||""}</textarea>
     <input type="file" accept="image/*" class="img-file" style="display:none" onchange="handleImagem(this)">
-    <button class="btn-img" onclick="this.previousElementSibling.click()" style="width:100%;margin-top:6px">🖼️ ADICIONAR IMAGEM</button>
-    <div class="img-container"></div>
-    <div class="multipla-area">
-      <div class="alt-row"><span>A</span><input class="alt-A" placeholder="Alternativa A" value="${dados?.A||""}"></div>
-      <div class="alt-row"><span>B</span><input class="alt-B" placeholder="Alternativa B" value="${dados?.B||""}"></div>
-      <div class="alt-row"><span>C</span><input class="alt-C" placeholder="Alternativa C" value="${dados?.C||""}"></div>
-      <div class="alt-row"><span>D</span><input class="alt-D" placeholder="Alternativa D" value="${dados?.D||""}"></div>
-      <div style="margin-top:8px"><small>Correta:</small> <select class="gab-select" style="width:100px;background:#fff;color:#000"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
+    <button class="btn-img" onclick="this.previousElementSibling.click()" style="width:100%;margin-top:6px" ${dados?'disabled':''}>🖼️ ADICIONAR IMAGEM</button>
+    <div class="img-container" data-base64="${dados?.imagem||""}">${dados?.imagem?`<img src="${dados.imagem}" class="img-preview"><button class="btn-red" onclick="removerImagem(this)">Remover imagem</button>`:""}</div>
+    <div class="multipla-area" style="display:${div.dataset.tipo=='multipla'?'block':'none'}">
+      <div class="alt-row"><span>A</span><input class="alt-A" placeholder="Alternativa A" value="${dados?.A||""}" ${dados?'disabled':''}></div>
+      <div class="alt-row"><span>B</span><input class="alt-B" placeholder="Alternativa B" value="${dados?.B||""}" ${dados?'disabled':''}></div>
+      <div class="alt-row"><span>C</span><input class="alt-C" placeholder="Alternativa C" value="${dados?.C||""}" ${dados?'disabled':''}></div>
+      <div class="alt-row"><span>D</span><input class="alt-D" placeholder="Alternativa D" value="${dados?.D||""}" ${dados?'disabled':''}></div>
+      <div style="margin-top:8px"><small>Correta:</small> <select class="gab-select" style="width:100px;background:#fff;color:#000" ${dados?'disabled':''}><option value="A" ${dados?.gab=='A'?'selected':''}>A</option><option value="B" ${dados?.gab=='B'?'selected':''}>B</option><option value="C" ${dados?.gab=='C'?'selected':''}>C</option><option value="D" ${dados?.gab=='D'?'selected':''}>D</option></select></div>
     </div>
-    <div class="dissertativa-area" style="display:none"><small style="color:#888">O aluno vai escrever a resposta</small></div>
+    <div class="dissertativa-area" style="display:${div.dataset.tipo=='dissertativa'?'block':'none'}"><small style="color:#888">O aluno vai escrever a resposta</small></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn-save" onclick="salvarQuestao(this)" style="flex:1;${dados?'display:none':''}">💾 SALVAR QUESTÃO</button>
+      <button class="btn-edit-q" onclick="editarQuestao(this)" style="flex:1;${dados?'':'display:none'}">✏️ EDITAR QUESTÃO</button>
+    </div>
   `;
   container.appendChild(div);
-  if(dados?.gab) div.querySelector('.gab-select').value = dados.gab;
-  if(dados?.tipo) setTipoInicial(div, dados.tipo);
-  if(dados?.imagem){
-    let imgC = div.querySelector('.img-container');
-    imgC.innerHTML = `<img src="${dados.imagem}" class="img-preview"><button class="btn-red" onclick="this.parentElement.innerHTML=''">Remover imagem</button>`;
-    imgC.dataset.base64 = dados.imagem;
+  atualizarContador();
+  div.scrollIntoView({behavior:'smooth'});
+}
+
+window.salvarQuestao = function(btn){
+  let div = btn.closest('.q-editor');
+  let pergunta = div.querySelector('.pergunta-input')?.value.trim() || "";
+  if(pergunta.length < 5){ alert("Digite a pergunta! Pelo menos 5 letras."); div.querySelector('.pergunta-input').focus(); return; }
+  let tipo = div.dataset.tipo;
+  if(tipo=='multipla'){
+    let a = div.querySelector('.alt-A')?.value.trim() || "";
+    let b = div.querySelector('.alt-B')?.value.trim() || "";
+    if(!a ||!b){ alert("Preencha pelo menos alternativa A e B"); return; }
   }
+  // Trava tudo
+  div.querySelectorAll('input, textarea, select,.btn-img,.tipo-sel button').forEach(el=> el.disabled = true);
+  div.dataset.salva = "true";
+  div.classList.add('salva');
+  div.querySelector('.status-q').innerText = "✅ SALVA";
+  div.querySelector('.status-q').className = "status-q status-salva";
+  btn.style.display = "none";
+  div.querySelector('.btn-edit-q').style.display = "block";
+  atualizarContador();
+  // Vibra
+  if(navigator.vibrate) navigator.vibrate(100);
 }
-window.setTipoInicial = function(div, tipo){
-  div.dataset.tipo = tipo;
-  let btns = div.querySelectorAll('.tipo-sel button');
-  btns.forEach(b=> b.classList.toggle('active', b.dataset.tipo==tipo));
-  div.querySelector('.multipla-area').style.display = tipo=='multipla'? 'block' : 'none';
-  div.querySelector('.dissertativa-area').style.display = tipo=='dissertativa'? 'block' : 'none';
+
+window.editarQuestao = function(btn){
+  let div = btn.closest('.q-editor');
+  div.querySelectorAll('input, textarea, select,.btn-img,.tipo-sel button').forEach(el=> el.disabled = false);
+  div.dataset.salva = "false";
+  div.classList.remove('salva');
+  div.querySelector('.status-q').innerText = "⏳ PENDENTE";
+  div.querySelector('.status-q').className = "status-q status-pendente";
+  btn.style.display = "none";
+  div.querySelector('.btn-save').style.display = "block";
+  atualizarContador();
 }
+
+window.removerImagem = function(btn){
+  let container = btn.closest('.img-container');
+  container.innerHTML = "";
+  container.dataset.base64 = "";
+}
+
 window.setTipo = function(btn){
   let div = btn.closest('.q-editor');
+  if(div.dataset.salva=="true"){ alert("Clique em EDITAR para mudar o tipo"); return; }
   let tipo = btn.dataset.tipo;
   div.dataset.tipo = tipo;
   let btns = div.querySelectorAll('.tipo-sel button');
@@ -147,25 +203,29 @@ window.setTipo = function(btn){
 }
 window.handleImagem = function(input){
   let file = input.files[0]; if(!file) return;
-  let div = input.closest('.q-editor');
-  let container = div.querySelector('.img-container');
+  let container = input.closest('.q-editor').querySelector('.img-container');
   let reader = new FileReader();
   reader.onload = function(e){
-    container.innerHTML = `<img src="${e.target.result}" class="img-preview"><button class="btn-red" onclick="this.parentElement.innerHTML=''; this.parentElement.dataset.base64=''">Remover imagem</button>`;
+    container.innerHTML = `<img src="${e.target.result}" class="img-preview"><button class="btn-red" onclick="removerImagem(this)">Remover imagem</button>`;
     container.dataset.base64 = e.target.result;
   };
   reader.readAsDataURL(file);
 }
 window.atualizarNumeracao = function(){
   document.querySelectorAll('#editorQuestoes.q-editor').forEach((el,i)=>{
-    el.querySelector('.q-editor-header').innerText = `QUESTÃO ${i+1}`;
+    el.querySelector('.q-editor-header').innerHTML = `QUESTÃO ${i+1} <span class="status-q ${el.dataset.salva=='true'?'status-salva':'status-pendente'}">${el.dataset.salva=='true'?'✅ SALVA':'⏳ PENDENTE'}</span>`;
   });
 }
-window.limparEditor = function(){ if(confirm("Limpar tudo?")){ document.getElementById('editorQuestoes').innerHTML=""; document.getElementById('previewArea').innerHTML=""; contadorQuestoes=0; } }
+window.atualizarContador = function(){
+  let total = document.querySelectorAll('#editorQuestoes.q-editor').length;
+  let salvas = document.querySelectorAll('#editorQuestoes.q-editor[data-salva="true"]').length;
+  document.getElementById('contadorSalvas').innerText = `📊 ${salvas} de ${total} questões salvas`;
+}
+window.limparEditor = function(){ if(confirm("Limpar tudo?")){ document.getElementById('editorQuestoes').innerHTML=""; document.getElementById('previewArea').innerHTML=""; contadorQuestoes=0; atualizarContador(); } }
 window.previewQuestoes = function(){
   let qs = coletarQuestoes();
-  if(qs.length==0){ alert("Adicione pelo menos 1 questão com pergunta!"); return; }
-  let html = `<h4 style="color:#00ff88">✅ ${qs.length} questões - Preview</h4>`;
+  if(qs.length==0){ alert("Nenhuma questão salva! Clique em 💾 SALVAR QUESTÃO"); return; }
+  let html = `<h4 style="color:#00ff88">✅ ${qs.length} questões salvas - Preview</h4>`;
   qs.forEach((q,i)=>{
     let imgHtml = q.imagem? `<img src="${q.imagem}" style="max-width:100%;border-radius:8px;margin:8px 0">` : "";
     if(q.tipo=='dissertativa'){
@@ -178,15 +238,11 @@ window.previewQuestoes = function(){
 }
 function coletarQuestoes(){
   let lista = [];
-  document.querySelectorAll('#editorQuestoes.q-editor').forEach(div=>{
+  document.querySelectorAll('#editorQuestoes.q-editor[data-salva="true"]').forEach(div=>{
     let pergunta = div.querySelector('.pergunta-input')?.value.trim() || "";
     if(!pergunta) return;
     let imgContainer = div.querySelector('.img-container');
     let imagem = imgContainer?.dataset.base64 || "";
-    if(!imagem){
-      let imgTag = imgContainer?.querySelector('img');
-      if(imgTag) imagem = imgTag.src;
-    }
     let tipo = div.dataset.tipo || 'multipla';
     let q = { pergunta: pergunta, tipo: tipo, imagem: imagem, htmlImagens: imagem? `<img src="${imagem}">` : "", A:"", B:"", C:"", D:"", gab:"A" };
     if(tipo=='multipla'){
@@ -209,18 +265,19 @@ async function carregarDaNuvem(){ if(!profLogado) return; let snapProvas=await g
 window.salvarProva = async function(){
   let nome=nomeProva.value.trim(), senha=senhaUnica.value.trim(), ini=dataInicio.value, fim=dataFim.value;
   if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;}
+  // Verifica se tem pendente
+  let pendentes = document.querySelectorAll('#editorQuestoes.q-editor[data-salva="false"]').length;
+  if(pendentes > 0){ if(!confirm(`Tem ${pendentes} questão(ões) PENDENTE não salva. Quer salvar só as ${document.querySelectorAll('#editorQuestoes.q-editor[data-salva="true"]').length} salvas?`)) return; }
   let qs = coletarQuestoes();
-  if(qs.length==0){alert("Digite as perguntas! Clique na caixa branca PERGUNTA e digite a pergunta.");return;}
+  if(qs.length==0){alert("Nenhuma questão salva! Clique em 💾 SALVAR QUESTÃO em cada questão.");return;}
   let id=`${profLogado.id}_${norm(senha)}`;
-  let obj={ id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qs.length, gabarito:qs.map(q=>q.gab||""), questoes:qs, professorId:profLogado.id, professorNome:profLogado.usuario, timestamp:Date.now(), tipo:"editor_visual_fix" };
-  try{
-    await setDoc(doc(db,"provas",id),obj,{merge:true});
-    alert(`✅ Prova salva! ${qs.length} questões | Código: ${senha}`);
-    await carregarDaNuvem();
-  }catch(e){ alert("Erro: "+e.message); }
+  let obj={ id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qs.length, gabarito:qs.map(q=>q.gab||""), questoes:qs, professorId:profLogado.id, professorNome:profLogado.usuario, timestamp:Date.now(), tipo:"editor_com_salvar_por_questao" };
+  await setDoc(doc(db,"provas",id),obj,{merge:true});
+  alert(`✅ Prova salva! ${qs.length} questões | Código: ${senha}`);
+  await carregarDaNuvem();
 }
 function renderSalas(){ let div=listaProvas; document.getElementById('totalSalas').innerText=provas.length; if(!provas.length){div.innerHTML='<small>Nenhuma prova - Clique em + ADICIONAR QUESTÃO</small>';return;} let filtro=document.getElementById('filtroSala'); filtro.innerHTML='<option value="TODAS">TODAS</option>' + provas.map(p=>`<option value="${p.id}">${p.nome} (${p.senha})</option>`).join(''); div.innerHTML=provas.map(p=>`<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div><b style="color:#00ff88">${p.nome}</b> <span style="background:#00ff88;color:#000;padding:2px 6px;border-radius:10px;font-size:10px">${p.qtd}q</span><br><small>Código: <b style="color:#ffeb3b">${p.senha}</b></small></div><div><button class="btn-edit" onclick="editarProva('${p.id}')">✏️</button><button class="btn-red" onclick="apagarSala('${p.id}')">🗑️</button></div></div></div>`).join(''); }
-window.editarProva = function(id){ let p=provas.find(x=>x.id==id); if(!p) return; nomeProva.value=p.nome; senhaUnica.value=p.senha; dataInicio.value=p.inicio; dataFim.value=p.fim; document.getElementById('editorQuestoes').innerHTML=""; contadorQuestoes=0; p.questoes.forEach(q=> addQuestao(q)); window.scrollTo({top:0,behavior:'smooth'}); }
+window.editarProva = function(id){ let p=provas.find(x=>x.id==id); if(!p) return; nomeProva.value=p.nome; senhaUnica.value=p.senha; dataInicio.value=p.inicio; dataFim.value=p.fim; document.getElementById('editorQuestoes').innerHTML=""; contadorQuestoes=0; p.questoes.forEach(q=> addQuestao(q)); window.scrollTo({top:0,behavior:'smooth'}); atualizarContador(); }
 window.apagarSala = async function(id){if(!confirm("Apagar?"))return; await deleteDoc(doc(db,"provas",id)); await carregarDaNuvem();}
 window.abrirProvaComCodigo = async function(){ if(!alunoLogado){alert("Digite seu nome");return;} let codigo=codigoProvaAluno.value.trim().toLowerCase(); let p=window.todasProvas.find(x=> x.senha.trim().toLowerCase() == codigo); if(!p){alert("Código não encontrado");return;} let agora=new Date(); let ini=parseDataLocal(p.inicio); let fim=parseDataLocal(p.fim); if(agora < ini){alert(`Ainda não começou`);return;} if(agora > fim){alert(`Encerrada`);return;} provaAtual=p; respostas=new Array(p.qtd).fill(''); titProva.innerText=`${p.nome}`; infoAl.innerText=`Aluno: ${alunoLogado.login}`; let htmlQ = ""; p.questoes.forEach((q,i)=>{ if(q.tipo=='dissertativa'){ htmlQ += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""}</div><textarea id="q${i}_disc" placeholder="Digite sua resposta aqui..." style="background:#111;color:#fff;border:2px solid #444" rows="4" oninput="respostas[${i}]=this.value"></textarea></div>`; } else { htmlQ += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""}</div><div class="q-alt" id="q${i}A" onclick="marcar(${i},'A')"><span class="letra">A</span><span>${q.A}</span></div><div class="q-alt" id="q${i}B" onclick="marcar(${i},'B')"><span class="letra">B</span><span>${q.B}</span></div><div class="q-alt" id="q${i}C" onclick="marcar(${i},'C')"><span class="letra">C</span><span>${q.C}</span></div><div class="q-alt" id="q${i}D" onclick="marcar(${i},'D')"><span class="letra">D</span><span>${q.D}</span></div></div>`; } }); document.getElementById('listaQuestoesAluno').innerHTML = htmlQ; document.getElementById('alunoLogin').style.display='none'; areaProva.style.display='block'; if(timerInterval) clearInterval(timerInterval); timerInterval=setInterval(()=>{let d=fim-new Date(); if(d<=0){clearInterval(timerInterval); enviar(); return;} let h=Math.floor(d/3600000), m=Math.floor((d%3600000)/60000), s=Math.floor((d%60000)/1000); cronometro.innerText=`⏰ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000); }
 window.marcar = function(q,l){ respostas[q]=l; ['A','B','C','D'].forEach(x=>{ let el = document.getElementById(`q${q}${x}`); if(el) el.classList.toggle('sel',x==l); }); }
