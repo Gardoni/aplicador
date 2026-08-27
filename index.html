@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVALIACAO - Prova Online</title>
+<title>AVALIACAO - Prova Online WORD</title>
+<script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
 <style>
 body{font-family:system-ui;background:#0a0a0a;color:#fff;text-align:center;padding:10px;margin:0}
 .card{background:#1a1a1a;padding:16px;border-radius:16px;max-width:850px;margin:10px auto;text-align:left;border:1px solid #333}
 input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:none;font-size:15px;box-sizing:border-box;background:#fff;color:#000}
 button{border:none;padding:9px 14px;font-weight:800;border-radius:30px;margin:3px;cursor:pointer;font-size:11px}
-.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-excel{background:#00c853;color:#fff}.btn-sec{background:#333;color:#fff}.btn-edit{background:#ffca28;color:#000}
+.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-excel{background:#00c853;color:#fff}.btn-sec{background:#333;color:#fff}.btn-edit{background:#ffca28;color:#000}.btn-word{background:#2b579a;color:#fff}
 .tab{display:flex;max-width:850px;margin:10px auto;background:#222;border-radius:30px;padding:4px}
 .tab button{flex:1;background:transparent;color:#888;padding:12px}.tab button.active{background:#00ff88;color:#000}
 .q-card{background:#222;padding:16px;border-radius:12px;margin:12px 0;border:1px solid #333;text-align:left}
@@ -18,6 +19,8 @@ button{border:none;padding:9px 14px;font-weight:800;border-radius:30px;margin:3p
 .q-alt:hover{border-color:#00ff88}
 .q-alt.sel{background:#00ff88;color:#000;border-color:#00ff88;font-weight:800}
 .letra{width:32px;height:32px;background:#333;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900}
+.drop{border:3px dashed #2b579a;padding:20px;border-radius:16px;text-align:center;background:#111;margin:10px 0;cursor:pointer}
+.drop.dragover{border-color:#00ff88;background:#0a2218}
 </style>
 </head>
 <body>
@@ -43,8 +46,21 @@ button{border:none;padding:9px 14px;font-weight:800;border-radius:30px;margin:3p
     <input id="nomeProva" placeholder="Ex: 2º ANO - FATORIAL">
     <input id="senhaUnica" placeholder="CÓDIGO: MAT2A">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><small>INÍCIO</small><input id="dataInicio" type="datetime-local"></div><div><small>FIM</small><input id="dataFim" type="datetime-local"></div></div>
-    <textarea id="textoQuestoes" rows="14" placeholder="Cole as questões..."></textarea>
-    <button class="btn-edit" onclick="carregarProva2Ano()" style="width:100%">📚 CARREGAR SUA PROVA DO 2º ANO (10 Q)</button>
+
+    <!-- NOVO: LEITOR DE WORD - MANTENDO TUDO O RESTO -->
+    <div class="drop" id="dropZone" onclick="document.getElementById('docxFile').click()">
+      <div style="font-size:32px">📄</div>
+      <b style="color:#2b579a">CLIQUE OU ARRASTE O ARQUIVO WORD (.docx) AQUI</b><br>
+      <small style="color:#888">O sistema vai ler as questões e montar a prova automaticamente na página</small><br>
+      <small id="nomeArquivo" style="color:#00ff88"></small>
+    </div>
+    <input type="file" id="docxFile" accept=".docx" style="display:none" onchange="lerWord(this)">
+
+    <textarea id="textoQuestoes" rows="14" placeholder="Cole as questões ou carregue o WORD acima..."></textarea>
+    <div style="display:flex;gap:6px">
+      <button class="btn-edit" onclick="carregarProva2Ano()" style="flex:1">📚 CARREGAR PROVA 2º ANO (10 Q)</button>
+      <button class="btn-sec" onclick="previewQuestoes()" style="flex:1">👁️ VISUALIZAR</button>
+    </div>
     <div id="previewArea"></div>
     <button class="btn-go" onclick="salvarProva()" style="width:100%;margin-top:10px" id="btnSalvarSala">💾 SALVAR PROVA ONLINE</button>
   </div>
@@ -77,6 +93,37 @@ window.todasProvas=[];
 const ADMIN_USER = "gardoni";
 function norm(s){return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'_');}
 function parseDataLocal(str){ if(!str) return null; try{ let [data, hora] = str.split('T'); let [ano, mes, dia] = data.split('-').map(Number); let [h, m] = hora.split(':').map(Number); return new Date(ano, mes-1, dia, h, m); }catch{ return new Date(str); } }
+
+// --- NOVAS FUNÇÕES APENAS PARA LER WORD, SEM ALTERAR O RESTO ---
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', e=>{ e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', ()=> dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e=>{ e.preventDefault(); dropZone.classList.remove('dragover'); if(e.dataTransfer.files.length) lerWord({files:e.dataTransfer.files}); });
+
+window.lerWord = async function(input){
+  let file = input.files[0];
+  if(!file) return;
+  document.getElementById('nomeArquivo').innerText = "📄 Lendo: " + file.name;
+  let buf = await file.arrayBuffer();
+  let result = await mammoth.extractRawText({arrayBuffer: buf});
+  let texto = result.value;
+  document.getElementById('textoQuestoes').value = texto;
+  // auto processa
+  let qs = parseQuestoesDoTexto(texto);
+  // deduplica (seu arquivo tem 4 provas por página)
+  let unicas = []; let vistas = new Set();
+  qs.forEach(q=>{ let k = q.pergunta.substring(0,25); if(!vistas.has(k)){ vistas.add(k); unicas.push(q); } });
+  if(unicas.length >= 3){
+    let txt = ""; unicas.forEach((q,i)=>{ txt += `${i+1}) ${q.pergunta}\nA) ${q.A}\nB) ${q.B}\nC) ${q.C}\nD) ${q.D}\nGAB: ${q.gab}\n\n`; });
+    document.getElementById('textoQuestoes').value = txt;
+    previewQuestoes();
+    alert(`✅ WORD LIDO! ${unicas.length} questões encontradas. Já montei a avaliação na página, é só salvar!`);
+  } else {
+    previewQuestoes();
+  }
+}
+// --- FIM NOVAS FUNÇÕES ---
+
 const PROVA_2ANO = [
   {pergunta:"O que significa 4! (4 fatorial)?", A:"4+3+2+1", B:"4 x 4 x 4 x 4", C:"4 x 3 x 2 x 1", D:"4 + 4", gab:"C"},
   {pergunta:"Quanto vale 2! + 3!", A:"5!", B:"5", C:"8", D:"10", gab:"C"},
@@ -90,15 +137,15 @@ const PROVA_2ANO = [
   {pergunta:"Em um jogo, existem 25 números disponíveis, e cada cartão deve ser preenchido com 15 números diferentes. Considerando que a ordem dos números não importa, quantos cartões diferentes podem ser formados?", A:"15!/25!", B:"25!/(15! x 10!)", C:"15!/(25! x 10!)", D:"25!/10!", gab:"B"},
 ];
 window.carregarProva2Ano = function(){ let txt = ""; PROVA_2ANO.forEach((q,i)=>{ txt += `${i+1}) ${q.pergunta}\nA) ${q.A}\nB) ${q.B}\nC) ${q.C}\nD) ${q.D}\nGAB: ${q.gab}\n\n`; }); document.getElementById('textoQuestoes').value = txt; previewQuestoes(); }
-function parseQuestoesDoTexto(texto){ let questoes = []; let blocos = texto.split(/\n\s*\n/); if(blocos.length < 2) blocos = texto.split(/\n(?=\d+\))/); blocos.forEach(bloco=>{ bloco = bloco.trim(); if(!bloco) return; let linhas = bloco.split('\n').map(l=>l.trim()).filter(l=>l); if(linhas.length < 2) return; let pergunta = linhas[0].replace(/^\d+\)\s*/, '').trim(); let q = {pergunta: pergunta, A:"", B:"", C:"", D:"", gab:"A"}; linhas.forEach(l=>{ let m = l.match(/^A\)\s*(.*)/i); if(m) q.A = m[1]; m = l.match(/^B\)\s*(.*)/i); if(m) q.B = m[1]; m = l.match(/^C\)\s*(.*)/i); if(m) q.C = m[1]; m = l.match(/^D\)\s*(.*)/i); if(m) q.D = m[1]; m = l.match(/GAB:\s*([A-D])/i); if(m) q.gab = m[1].toUpperCase(); }); if(q.A && q.B) questoes.push(q); }); return questoes; }
-window.previewQuestoes = function(){ let texto = document.getElementById('textoQuestoes').value; let qs = parseQuestoesDoTexto(texto); questoesAtuais = qs; let html = `<h4 style="color:#00ff88">${qs.length} questões detectadas</h4>`; qs.forEach((q,i)=>{ html += `<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><b>${i+1}) ${q.pergunta} [${q.gab}]</b><br><small>A) ${q.A} | B) ${q.B} | C) ${q.C} | D) ${q.D}</small></div>`; }); document.getElementById('previewArea').innerHTML = html; }
+function parseQuestoesDoTexto(texto){ let questoes = []; let blocos = texto.split(/\n\s*\n/); if(blocos.length < 2) blocos = texto.split(/\n(?=\d+\))/); blocos.forEach(bloco=>{ bloco = bloco.trim(); if(!bloco) return; let linhas = bloco.split('\n').map(l=>l.trim()).filter(l=>l); if(linhas.length < 2) return; let pergunta = linhas[0].replace(/^\d+\)\s*/, '').trim(); if(pergunta.length<5 || pergunta.includes("EE PROFESSOR") || pergunta.includes("AVALIAÇÃO") || pergunta.includes("Aluno:")) return; let q = {pergunta: pergunta, A:"", B:"", C:"", D:"", gab:"A"}; linhas.forEach(l=>{ let m = l.match(/^A\)\s*(.*)/i); if(m) q.A = m[1]; m = l.match(/^B\)\s*(.*)/i); if(m) q.B = m[1]; m = l.match(/^C\)\s*(.*)/i); if(m) q.C = m[1]; m = l.match(/^D\)\s*(.*)/i); if(m) q.D = m[1]; m = l.match(/GAB:\s*([A-D])/i); if(m) q.gab = m[1].toUpperCase(); }); if(q.A && q.B) questoes.push(q); }); return questoes; }
+window.previewQuestoes = function(){ let texto = document.getElementById('textoQuestoes').value; let qs = parseQuestoesDoTexto(texto); questoesAtuais = qs; let html = `<h4 style="color:#00ff88">${qs.length} questões detectadas - Avaliação montada na página</h4>`; qs.forEach((q,i)=>{ html += `<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><b>${i+1}) ${q.pergunta} [${q.gab}]</b><br><small>A) ${q.A} | B) ${q.B} | C) ${q.C} | D) ${q.D}</small></div>`; }); document.getElementById('previewArea').innerHTML = html; }
 async function carregarSalasParaAluno(){ try{ let snap=await getDocs(collection(db,"provas")); window.todasProvas=[]; snap.forEach(d=>window.todasProvas.push(d.data())); document.getElementById('statusFirebase').innerText="✅ "+window.todasProvas.length+" provas online"; document.getElementById('listaCodigosDisponiveis').innerText="Códigos: "+window.todasProvas.map(p=>p.senha).join(', '); }catch(e){ document.getElementById('statusFirebase').innerText="❌ "+e.message; } }
 window.showTab = function(t){ if(t=='prof'){if(!profLogado){loginProf.style.display='block'; areaProf.style.display='none';}else{loginProf.style.display='none'; areaProf.style.display='block';} areaAluno.style.display='none';} else{areaAluno.style.display='block'; areaProf.style.display='none'; loginProf.style.display='none'; carregarSalasParaAluno();} tabProf.classList.toggle('active', t=='prof'); tabAluno.classList.toggle('active', t=='aluno'); }
 window.loginAlunoSimples = function(){ let login = document.getElementById('alunoLoginInput').value.trim(); if(login.length < 2){ document.getElementById('msgAluno').innerText="Digite seu nome"; return; } alunoLogado = {login: login, id: norm(login)}; document.getElementById('msgAluno').innerText = "✅ Olá "+login+"! Agora digite o código"; }
 window.loginProfessor = async function(){ let u=profNome.value.trim(), s=profSenha.value.trim(); let id=norm(u); if(!u||!s){msgLogin.innerText="Preencha";return;} let snap=await getDoc(doc(db,"professores",id)); if(id===ADMIN_USER &&!snap.exists()){await setDoc(doc(db,"professores",ADMIN_USER),{id:ADMIN_USER, usuario:"gardoni", senha:"Rga@193319", isAdmin:true, timestamp:Date.now()}); snap=await getDoc(doc(db,"professores",ADMIN_USER));} if(!snap.exists()){msgLogin.innerText="Não encontrado";return;} let dados=snap.data(); if(dados.senha!=s){msgLogin.innerText="Senha errada";return;} profLogado=dados; localStorage.setItem('prof_logado', JSON.stringify(profLogado)); nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; loginProf.style.display='none'; areaProf.style.display='block'; carregarDaNuvem(); }
 window.sair = function(){profLogado=null; localStorage.removeItem('prof_logado'); areaProf.style.display='none'; loginProf.style.display='block';}
 async function carregarDaNuvem(){ if(!profLogado) return; let snapProvas=await getDocs(collection(db,"provas")); provas=[]; snapProvas.forEach(d=>{let p=d.data(); if(p.professorId==profLogado.id) provas.push(p);}); let snapRes=await getDocs(collection(db,"resultados")); let meusIds=new Set(provas.map(p=>p.id)); resultados=[]; snapRes.forEach(d=>{let r=d.data(); if(meusIds.has(r.provaId)) resultados.push(r);}); renderSalas(); renderRes(); await carregarSalasParaAluno(); }
-window.salvarProva = async function(){ let nome=nomeProva.value.trim(), senha=senhaUnica.value.trim(), ini=dataInicio.value, fim=dataFim.value; if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;} let texto = document.getElementById('textoQuestoes').value; let qs = parseQuestoesDoTexto(texto); if(qs.length==0){alert("Nenhuma questão!");return;} let id=`${profLogado.id}_${norm(senha)}`; let obj={ id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qs.length, gabarito:qs.map(q=>q.gab), questoes:qs, professorId:profLogado.id, professorNome:profLogado.usuario, timestamp:Date.now(), tipo:"online" }; await setDoc(doc(db,"provas",id),obj,{merge:true}); alert(`✅ Prova salva! ${qs.length} questões | Código: ${senha}`); await carregarDaNuvem(); }
+window.salvarProva = async function(){ let nome=nomeProva.value.trim(), senha=senhaUnica.value.trim(), ini=dataInicio.value, fim=dataFim.value; if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;} let texto = document.getElementById('textoQuestoes').value; let qs = parseQuestoesDoTexto(texto); if(qs.length==0){alert("Nenhuma questão!");return;} let id=`${profLogado.id}_${norm(senha)}`; let obj={ id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qs.length, gabarito:qs.map(q=>q.gab), questoes:qs, professorId:profLogado.id, professorNome:profLogado.usuario, timestamp:Date.now(), tipo:"word_online" }; await setDoc(doc(db,"provas",id),obj,{merge:true}); alert(`✅ Prova salva! ${qs.length} questões | Código: ${senha}`); await carregarDaNuvem(); }
 function renderSalas(){ let div=listaProvas; document.getElementById('totalSalas').innerText=provas.length; if(!provas.length){div.innerHTML='<small>Nenhuma</small>';return;} let filtro=document.getElementById('filtroSala'); filtro.innerHTML='<option value="TODAS">TODAS</option>' + provas.map(p=>`<option value="${p.id}">${p.nome} (${p.senha})</option>`).join(''); div.innerHTML=provas.map(p=>`<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div><b style="color:#00ff88">${p.nome}</b> <span style="background:#00ff88;color:#000;padding:2px 6px;border-radius:10px;font-size:10px">${p.qtd}q</span><br><small>Código: <b style="color:#ffeb3b">${p.senha}</b></small></div><div><button class="btn-red" onclick="apagarSala('${p.id}')">🗑️</button></div></div></div>`).join(''); }
 window.apagarSala = async function(id){if(!confirm("Apagar?"))return; await deleteDoc(doc(db,"provas",id)); await carregarDaNuvem();}
 window.abrirProvaComCodigo = async function(){ if(!alunoLogado){alert("Digite seu nome");return;} let codigo=codigoProvaAluno.value.trim().toLowerCase(); let p=window.todasProvas.find(x=> x.senha.trim().toLowerCase() == codigo); if(!p){alert("Código não encontrado");return;} let agora=new Date(); let ini=parseDataLocal(p.inicio); let fim=parseDataLocal(p.fim); if(agora < ini){alert(`Ainda não começou`);return;} if(agora > fim){alert(`Encerrada`);return;} provaAtual=p; respostas=new Array(p.qtd).fill(''); titProva.innerText=`${p.nome}`; infoAl.innerText=`Aluno: ${alunoLogado.login}`; let htmlQ = ""; p.questoes.forEach((q,i)=>{ htmlQ += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta}</div><div class="q-alt" id="q${i}A" onclick="marcar(${i},'A')"><span class="letra">A</span><span>${q.A}</span></div><div class="q-alt" id="q${i}B" onclick="marcar(${i},'B')"><span class="letra">B</span><span>${q.B}</span></div><div class="q-alt" id="q${i}C" onclick="marcar(${i},'C')"><span class="letra">C</span><span>${q.C}</span></div><div class="q-alt" id="q${i}D" onclick="marcar(${i},'D')"><span class="letra">D</span><span>${q.D}</span></div></div>`; }); document.getElementById('listaQuestoesAluno').innerHTML = htmlQ; document.getElementById('alunoLogin').style.display='none'; areaProva.style.display='block'; if(timerInterval) clearInterval(timerInterval); timerInterval=setInterval(()=>{let d=fim-new Date(); if(d<=0){clearInterval(timerInterval); enviar(); return;} let h=Math.floor(d/3600000), m=Math.floor((d%3600000)/60000), s=Math.floor((d%60000)/1000); cronometro.innerText=`⏰ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000); }
