@@ -3,29 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVALIACAO - WORD com IMAGENS</title>
-<script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<title>AVALIACAO - Editor Visual</title>
 <style>
 body{font-family:system-ui;background:#0a0a0a;color:#fff;text-align:center;padding:10px;margin:0}
 .card{background:#1a1a1a;padding:16px;border-radius:16px;max-width:900px;margin:10px auto;text-align:left;border:1px solid #333}
 input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:none;font-size:15px;box-sizing:border-box;background:#fff;color:#000}
-button{border:none;padding:9px 14px;font-weight:800;border-radius:30px;margin:3px;cursor:pointer;font-size:11px}
-.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-excel{background:#00c853;color:#fff}.btn-sec{background:#333;color:#fff}.btn-edit{background:#ffca28;color:#000}.btn-word{background:#2b579a;color:#fff}
+button{border:none;padding:10px 14px;font-weight:800;border-radius:30px;margin:3px;cursor:pointer;font-size:11px}
+.btn-go{background:#00ff88;color:#000}.btn-blue{background:#2962ff;color:#fff}.btn-red{background:#b71c1c;color:#fff}.btn-excel{background:#00c853;color:#fff}.btn-sec{background:#333;color:#fff}.btn-edit{background:#ffca28;color:#000}.btn-img{background:#9c27b0;color:#fff}
 .tab{display:flex;max-width:900px;margin:10px auto;background:#222;border-radius:30px;padding:4px}
 .tab button{flex:1;background:transparent;color:#888;padding:12px}.tab button.active{background:#00ff88;color:#000}
+.q-editor{background:#222;padding:16px;border-radius:12px;margin:12px 0;border:2px solid #333;text-align:left;position:relative}
+.q-editor.num{position:absolute;top:-10px;left:15px;background:#00ff88;color:#000;padding:2px 10px;border-radius:20px;font-weight:900;font-size:12px}
 .q-card{background:#222;padding:16px;border-radius:12px;margin:12px 0;border:1px solid #333;text-align:left}
 .q-pergunta{font-size:16px;font-weight:700;margin-bottom:10px;color:#fff;line-height:1.5}
-.q-pergunta img{max-width:100%;border-radius:8px;margin:8px 0;border:2px solid #444;display:block}
-.q-alt{padding:12px;margin:7px 0;background:#111;border:2px solid #444;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:14px}
+.q-pergunta img{max-width:100%;border-radius:10px;margin:10px 0;border:2px solid #444;display:block}
+.q-alt{padding:12px;margin:7px 0;background:#111;border:2px solid #444;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px}
 .q-alt:hover{border-color:#00ff88}
 .q-alt.sel{background:#00ff88;color:#000;border-color:#00ff88;font-weight:800}
 .letra{width:32px;height:32px;background:#333;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900}
-.drop{border:3px dashed #00ff88;padding:30px;border-radius:16px;text-align:center;background:#111;margin:10px 0;cursor:pointer}
-.drop.dragover{border-color:#ffeb3b;background:#1a1a00}
+.img-preview{max-width:100%;border-radius:10px;margin:8px 0;border:2px solid #9c27b0;max-height:200px}
+.tipo-sel{display:flex;gap:6px;margin:8px 0}
+.tipo-sel button{flex:1;padding:10px}
+.tipo-sel button.active{background:#2962ff;color:#fff}
 </style>
 </head>
 <body>
-<h2 style="color:#00ff88">📝 APLICADOR - WORD COM IMAGENS → PROVA ONLINE</h2>
+<h2 style="color:#00ff88">📝 APLICADOR - EDITOR VISUAL DE PROVAS</h2>
 <div id="statusFirebase" style="font-size:12px;color:#888">Conectando...</div>
 <div class="tab">
   <button id="tabProf" class="active" onclick="showTab('prof')">👨‍🏫 PROFESSOR</button>
@@ -43,27 +46,20 @@ button{border:none;padding:9px 14px;font-weight:800;border-radius:30px;margin:3p
     <button class="btn-red" onclick="sair()">SAIR</button>
   </div>
   <div class="card">
-    <h3 style="color:#00ff88">+ NOVA PROVA DO SEU WORD (COM IMAGENS)</h3>
-    <input id="nomeProva" placeholder="Nome da Prova: Ex: 8º ANO - CONGRUÊNCIA">
+    <h3 style="color:#00ff88">+ MONTAR AVALIAÇÃO DENTRO DO APP</h3>
+    <input id="nomeProva" placeholder="Nome da Prova: Ex: 8º ANO - TRIÂNGULOS">
     <input id="senhaUnica" placeholder="Código: Ex: MAT8A">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><small>INÍCIO</small><input id="dataInicio" type="datetime-local"></div><div><small>FIM</small><input id="dataFim" type="datetime-local"></div></div>
 
-    <div class="drop" id="dropZone" onclick="document.getElementById('docxFile').click()">
-      <div style="font-size:40px">📄🖼️</div>
-      <b style="color:#00ff88">CLIQUE AQUI OU ARRASTE SEU ARQUIVO WORD (.docx)</b><br>
-      <small style="color:#aaa">O código vai ler as questões COM IMAGENS e montar a avaliação na própria página</small><br>
-      <small style="color:#ffca28">Funciona com questões de marcar (A,B,C,D) ou de escrever</small><br>
-      <small id="nomeArquivo" style="color:#00ff88;font-weight:800"></small>
-    </div>
-    <input type="file" id="docxFile" accept=".docx" style="display:none" onchange="lerWord(this)">
+    <div id="editorQuestoes"></div>
 
-    <textarea id="textoQuestoes" rows="8" placeholder="O texto do seu WORD vai aparecer aqui automaticamente... você pode editar antes de salvar"></textarea>
-    <div style="display:flex;gap:6px">
-      <button class="btn-sec" onclick="previewQuestoes()" style="flex:1">👁️ VISUALIZAR COMO O ALUNO VAI VER (COM IMAGENS)</button>
-      <button class="btn-sec" onclick="limparTudo()" style="flex:1">🗑️ LIMPAR</button>
+    <button class="btn-blue" onclick="addQuestao()" style="width:100%;padding:14px;margin-top:10px">+ ADICIONAR QUESTÃO</button>
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <button class="btn-sec" onclick="previewQuestoes()" style="flex:1">👁️ VISUALIZAR COMO ALUNO VAI VER</button>
+      <button class="btn-sec" onclick="limparEditor()" style="flex:1">🗑️ LIMPAR TUDO</button>
     </div>
-    <div id="previewArea"></div>
-    <button class="btn-go" onclick="salvarProva()" style="width:100%;margin-top:12px;padding:16px;font-size:14px" id="btnSalvarSala">💾 SALVAR PROVA ONLINE (COM IMAGENS)</button>
+    <div id="previewArea" style="margin-top:12px"></div>
+    <button class="btn-go" onclick="salvarProva()" style="width:100%;margin-top:12px;padding:16px;font-size:14px">💾 SALVAR PROVA ONLINE</button>
   </div>
   <div class="card"><h3>Minhas Provas (<span id="totalSalas">0</span>)</h3><div id="listaProvas"></div></div>
   <div class="card"><div style="display:flex;justify-content:space-between"><h3>Resultados</h3><select id="filtroSala" onchange="renderRes()"></select></div><div id="tabRes"></div><button class="btn-excel" onclick="baixar()" style="width:100%">📊 BAIXAR EXCEL</button></div>
@@ -89,118 +85,71 @@ import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc } fro
 const firebaseConfig = { apiKey: "AIzaSyCLaqaOCJnkfG4LID1Y5RoFpgEsX9nYGOM", authDomain: "testeapi-1ad07.firebaseapp.com", projectId: "testeapi-1ad07", storageBucket: "testeapi-1ad07.firebasestorage.app", messagingSenderId: "323295128076", appId: "1:323295128076:web:3af167424f75b680f19c29" };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-let profLogado=null, provas=[], resultados=[], provaAtual=null, respostas=[], timerInterval=null, alunoLogado=null, questoesAtuais=[];
+let profLogado=null, provas=[], resultados=[], provaAtual=null, respostas=[], timerInterval=null, alunoLogado=null;
+let questoesEditor = [];
 window.todasProvas=[];
 const ADMIN_USER = "gardoni";
 function norm(s){return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'_');}
 function parseDataLocal(str){ if(!str) return null; try{ let [data, hora] = str.split('T'); let [ano, mes, dia] = data.split('-').map(Number); let [h, m] = hora.split(':').map(Number); return new Date(ano, mes-1, dia, h, m); }catch{ return new Date(str); } }
 
-const dropZone = document.getElementById('dropZone');
-dropZone.addEventListener('dragover', e=>{ e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', ()=> dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', e=>{ e.preventDefault(); dropZone.classList.remove('dragover'); if(e.dataTransfer.files.length) lerWord({files:e.dataTransfer.files}); });
+window.addQuestao = function(dados=null){
+  let id = Date.now() + Math.random();
+  let q = dados || {id:id, pergunta:"", tipo:"multipla", A:"", B:"", C:"", D:"", gab:"A", imagem:"", htmlImagens:""};
+  questoesEditor.push(q);
+  renderEditor();
+}
 
-window.limparTudo = function(){ document.getElementById('textoQuestoes').value=""; document.getElementById('previewArea').innerHTML=""; document.getElementById('nomeArquivo').innerText=""; questoesAtuais=[]; }
+window.renderEditor = function(){
+  let div = document.getElementById('editorQuestoes');
+  div.innerHTML = questoesEditor.map((q, idx)=>`
+    <div class="q-editor">
+      <span class="num">Q${idx+1}</span>
+      <button class="btn-red" style="position:absolute;top:8px;right:8px" onclick="removerQuestao(${idx})">✕</button>
+      <div class="tipo-sel">
+        <button class="${q.tipo=='multipla'?'active':''}" onclick="setTipo(${idx},'multipla')">📝 Múltipla Escolha</button>
+        <button class="${q.tipo=='dissertativa'?'active':''}" onclick="setTipo(${idx},'dissertativa')">✍️ Escrever</button>
+      </div>
+      <textarea placeholder="Digite a pergunta aqui..." rows="2" oninput="questoesEditor[${idx}].pergunta=this.value">${q.pergunta}</textarea>
+      <input type="file" accept="image/*" id="img_${q.id}" style="display:none" onchange="uploadImagem(${idx}, this)">
+      <button class="btn-img" onclick="document.getElementById('img_${q.id}').click()" style="width:100%">🖼️ ${q.imagem?'TROCAR IMAGEM':'ADICIONAR IMAGEM'}</button>
+      ${q.imagem?`<img src="${q.imagem}" class="img-preview"><button class="btn-red" onclick="questoesEditor[${idx}].imagem='';questoesEditor[${idx}].htmlImagens='';renderEditor()">Remover imagem</button>`:""}
+      ${q.tipo=='multipla'?`
+        <div style="margin-top:10px">
+          <div style="display:flex;gap:6px;align-items:center"><span style="background:#333;padding:6px 10px;border-radius:50%">A</span><input placeholder="Alternativa A" value="${q.A}" oninput="questoesEditor[${idx}].A=this.value"></div>
+          <div style="display:flex;gap:6px;align-items:center"><span style="background:#333;padding:6px 10px;border-radius:50%">B</span><input placeholder="Alternativa B" value="${q.B}" oninput="questoesEditor[${idx}].B=this.value"></div>
+          <div style="display:flex;gap:6px;align-items:center"><span style="background:#333;padding:6px 10px;border-radius:50%">C</span><input placeholder="Alternativa C" value="${q.C}" oninput="questoesEditor[${idx}].C=this.value"></div>
+          <div style="display:flex;gap:6px;align-items:center"><span style="background:#333;padding:6px 10px;border-radius:50%">D</span><input placeholder="Alternativa D" value="${q.D}" oninput="questoesEditor[${idx}].D=this.value"></div>
+          <div style="margin-top:8px"><small>Correta:</small> <select onchange="questoesEditor[${idx}].gab=this.value" style="width:auto"><option value="A" ${q.gab=='A'?'selected':''}>A</option><option value="B" ${q.gab=='B'?'selected':''}>B</option><option value="C" ${q.gab=='C'?'selected':''}>C</option><option value="D" ${q.gab=='D'?'selected':''}>D</option></select></div>
+        </div>
+      `:`
+        <div style="margin-top:10px"><small style="color:#888">O aluno vai ver um campo para escrever a resposta</small></div>
+      `}
+    </div>
+  `).join('');
+}
 
-window.lerWord = async function(input){
+window.setTipo = function(idx, tipo){ questoesEditor[idx].tipo = tipo; renderEditor(); }
+window.removerQuestao = function(idx){ questoesEditor.splice(idx,1); renderEditor(); }
+window.uploadImagem = function(idx, input){
   let file = input.files[0]; if(!file) return;
-  document.getElementById('nomeArquivo').innerText = "📄 Lendo: " + file.name + " - com imagens...";
-  let buf = await file.arrayBuffer();
-
-  // 1. Pega texto puro para parse
-  let textResult = await mammoth.extractRawText({arrayBuffer: buf});
-  let textoPuro = textResult.value;
-
-  // 2. Pega HTML com imagens em base64
-  let htmlResult = await mammoth.convertToHtml({arrayBuffer: buf}, {
-    convertImage: mammoth.images.imgElement(function(image){
-      return image.read("base64").then(function(imageBuffer){
-        return { src: "data:" + image.contentType + ";base64," + imageBuffer };
-      });
-    })
-  });
-  let htmlComImagens = htmlResult.value;
-
-  // Guarda HTML para preview com imagens
-  window.htmlComImagensTemp = htmlComImagens;
-  document.getElementById('textoQuestoes').value = textoPuro;
-
-  // Parse inteligente
-  let qs = parseQuestoesDoTextoInteligente(textoPuro, htmlComImagens);
-  questoesAtuais = qs;
-
-  if(qs.length>0){
-    previewQuestoesComImagens();
-    alert(`✅ WORD LIDO COM SUCESSO! ${qs.length} questões encontradas (com imagens). Visualize abaixo e clique em SALVAR.`);
-  } else {
-    alert("Não detectei questões no formato A) B) C) D) - Vou mostrar o WORD inteiro como prova dissertativa com imagens");
-    questoesAtuais = [{pergunta: htmlComImagens, A:"", B:"", C:"", D:"", gab:"", tipo:"dissertativa", html: htmlComImagens}];
-    previewQuestoesComImagens();
-  }
+  let reader = new FileReader();
+  reader.onload = function(e){
+    questoesEditor[idx].imagem = e.target.result;
+    questoesEditor[idx].htmlImagens = `<img src="${e.target.result}">`;
+    renderEditor();
+  };
+  reader.readAsDataURL(file);
 }
+window.limparEditor = function(){ if(confirm("Limpar tudo?")){ questoesEditor=[]; renderEditor(); document.getElementById('previewArea').innerHTML=""; } }
 
-function parseQuestoesDoTextoInteligente(texto, html){
-  let questoes = [];
-  // Divide por números 1) 2) etc
-  let blocos = texto.split(/(?=\n?\d+\)\s)/g);
-  if(blocos.length < 2) blocos = texto.split(/\n\s*\n/);
-
-  // Extrai imagens do HTML por ordem
-  let imgs = [];
-  let regexImg = /<img[^>]+src="([^"]+)"[^>]*>/g;
-  let m; while((m=regexImg.exec(html))!==null){ imgs.push(m[0]); }
-
-  let imgIndex = 0;
-  blocos.forEach(bloco=>{
-    bloco = bloco.trim(); if(bloco.length < 10) return;
-    let linhas = bloco.split('\n').map(l=>l.trim()).filter(l=>l);
-    if(linhas.length==0) return;
-    let primeira = linhas[0];
-    if(primeira.includes("EE PROFESSOR") || primeira.includes("AVALIAÇÃO") || primeira.includes("Aluno:")) return;
-
-    let pergunta = primeira.replace(/^\d+\)\s*/, '').trim();
-    if(pergunta.length<5) return;
-
-    let q = {pergunta: pergunta, A:"", B:"", C:"", D:"", gab:"A", tipo:"multipla", htmlImagens:""};
-
-    // Pega imagem correspondente se houver
-    if(imgs[imgIndex]){ q.htmlImagens = imgs[imgIndex]; imgIndex++; }
-
-    linhas.forEach(l=>{
-      let ma = l.match(/^A\)\s*(.*)/i); if(ma) q.A = ma[1];
-      let mb = l.match(/^B\)\s*(.*)/i); if(mb) q.B = mb[1];
-      let mc = l.match(/^C\)\s*(.*)/i); if(mc) q.C = mc[1];
-      let md = l.match(/^D\)\s*(.*)/i); if(md) q.D = md[1];
-      let mg = l.match(/GAB:\s*([A-D])/i); if(mg) q.gab = mg[1].toUpperCase();
-    });
-
-    // Se não tem alternativas, é dissertativa
-    if(!q.A &&!q.B){ q.tipo = "dissertativa"; }
-
-    if(q.pergunta) questoes.push(q);
-  });
-
-  // Deduplica seu arquivo que vem 4x repetido
-  let unicas=[]; let vistas=new Set();
-  questoes.forEach(q=>{
-    let chave = q.pergunta.substring(0,20);
-    if(!vistas.has(chave)){ vistas.add(chave); unicas.push(q); }
-  });
-  return unicas.length>0? unicas : questoes;
-}
-
-window.previewQuestoes = function(){ previewQuestoesComImagens(); }
-
-window.previewQuestoesComImagens = function(){
-  let qs = questoesAtuais;
-  if(qs.length==0){ let txt=document.getElementById('textoQuestoes').value; qs=parseQuestoesDoTextoInteligente(txt, window.htmlComImagensTemp||""); questoesAtuais=qs; }
-  let html = `<h4 style="color:#00ff88">✅ ${qs.length} questões - Como o aluno vai ver (COM IMAGENS)</h4>`;
-  qs.forEach((q,i)=>{
-    if(q.tipo=="dissertativa"){
-      html += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""}</div><textarea placeholder="Aluno vai escrever aqui..." style="background:#111;color:#fff;border:1px solid #444" rows="3" disabled></textarea></div>`;
+window.previewQuestoes = function(){
+  let html = `<h4 style="color:#00ff88">✅ ${questoesEditor.length} questões - Preview do aluno</h4>`;
+  questoesEditor.forEach((q,i)=>{
+    if(q.tipo=='dissertativa'){
+      html += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""}</div><textarea placeholder="Aluno escreve aqui..." rows="3" disabled style="background:#111;color:#fff"></textarea></div>`;
     } else {
       html += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""} <span style="color:#00ff88">[${q.gab}]</span></div>
-      <div style="font-size:13px">A) ${q.A}<br>B) ${q.B}<br>C) ${q.C}<br>D) ${q.D}</div></div>`;
+      <div>A) ${q.A}<br>B) ${q.B}<br>C) ${q.C}<br>D) ${q.D}</div></div>`;
     }
   });
   document.getElementById('previewArea').innerHTML = html;
@@ -208,20 +157,21 @@ window.previewQuestoesComImagens = function(){
 
 async function carregarSalasParaAluno(){ try{ let snap=await getDocs(collection(db,"provas")); window.todasProvas=[]; snap.forEach(d=>window.todasProvas.push(d.data())); document.getElementById('statusFirebase').innerText="✅ "+window.todasProvas.length+" provas online"; document.getElementById('listaCodigosDisponiveis').innerText="Códigos: "+window.todasProvas.map(p=>p.senha).join(', '); }catch(e){ document.getElementById('statusFirebase').innerText="❌ "+e.message; } }
 window.showTab = function(t){ if(t=='prof'){if(!profLogado){loginProf.style.display='block'; areaProf.style.display='none';}else{loginProf.style.display='none'; areaProf.style.display='block';} areaAluno.style.display='none';} else{areaAluno.style.display='block'; areaProf.style.display='none'; loginProf.style.display='none'; carregarSalasParaAluno();} tabProf.classList.toggle('active', t=='prof'); tabAluno.classList.toggle('active', t=='aluno'); }
-window.loginAlunoSimples = function(){ let login = document.getElementById('alunoLoginInput').value.trim(); if(login.length < 2){ document.getElementById('msgAluno').innerText="Digite seu nome"; return; } alunoLogado = {login: login, id: norm(login)}; document.getElementById('msgAluno').innerText = "✅ Olá "+login+"! Agora digite o código"; }
-window.loginProfessor = async function(){ let u=profNome.value.trim(), s=profSenha.value.trim(); let id=norm(u); if(!u||!s){msgLogin.innerText="Preencha";return;} let snap=await getDoc(doc(db,"professores",id)); if(id===ADMIN_USER &&!snap.exists()){await setDoc(doc(db,"professores",ADMIN_USER),{id:ADMIN_USER, usuario:"gardoni", senha:"Rga@193319", isAdmin:true, timestamp:Date.now()}); snap=await getDoc(doc(db,"professores",ADMIN_USER));} if(!snap.exists()){msgLogin.innerText="Não encontrado";return;} let dados=snap.data(); if(dados.senha!=s){msgLogin.innerText="Senha errada";return;} profLogado=dados; localStorage.setItem('prof_logado', JSON.stringify(profLogado)); nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; loginProf.style.display='none'; areaProf.style.display='block'; carregarDaNuvem(); }
+window.loginAlunoSimples = function(){ let login = document.getElementById('alunoLoginInput').value.trim(); if(login.length < 2){ document.getElementById('msgAluno').innerText="Digite seu nome"; return; } alunoLogado = {login: login, id: norm(login)}; document.getElementById('msgAluno').innerText = "✅ Olá "+login+"!"; }
+window.loginProfessor = async function(){ let u=profNome.value.trim(), s=profSenha.value.trim(); let id=norm(u); if(!u||!s){msgLogin.innerText="Preencha";return;} let snap=await getDoc(doc(db,"professores",id)); if(id===ADMIN_USER &&!snap.exists()){await setDoc(doc(db,"professores",ADMIN_USER),{id:ADMIN_USER, usuario:"gardoni", senha:"Rga@193319", isAdmin:true, timestamp:Date.now()}); snap=await getDoc(doc(db,"professores",ADMIN_USER));} if(!snap.exists()){msgLogin.innerText="Não encontrado";return;} let dados=snap.data(); if(dados.senha!=s){msgLogin.innerText="Senha errada";return;} profLogado=dados; localStorage.setItem('prof_logado', JSON.stringify(profLogado)); nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; loginProf.style.display='none'; areaProf.style.display='block'; carregarDaNuvem(); if(questoesEditor.length==0) addQuestao(); }
 window.sair = function(){profLogado=null; localStorage.removeItem('prof_logado'); areaProf.style.display='none'; loginProf.style.display='block';}
 async function carregarDaNuvem(){ if(!profLogado) return; let snapProvas=await getDocs(collection(db,"provas")); provas=[]; snapProvas.forEach(d=>{let p=d.data(); if(p.professorId==profLogado.id) provas.push(p);}); let snapRes=await getDocs(collection(db,"resultados")); let meusIds=new Set(provas.map(p=>p.id)); resultados=[]; snapRes.forEach(d=>{let r=d.data(); if(meusIds.has(r.provaId)) resultados.push(r);}); renderSalas(); renderRes(); await carregarSalasParaAluno(); }
-window.salvarProva = async function(){ let nome=nomeProva.value.trim(), senha=senhaUnica.value.trim(), ini=dataInicio.value, fim=dataFim.value; if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;} let qs = questoesAtuais; if(qs.length==0){alert("Carregue um WORD primeiro!");return;} let id=`${profLogado.id}_${norm(senha)}`; let obj={ id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qs.length, gabarito:qs.map(q=>q.gab||""), questoes:qs, professorId:profLogado.id, professorNome:profLogado.usuario, timestamp:Date.now(), tipo:"word_com_imagens" }; await setDoc(doc(db,"provas",id),obj,{merge:true}); alert(`✅ Prova salva! ${qs.length} questões COM IMAGENS | Código: ${senha}`); await carregarDaNuvem(); }
-function renderSalas(){ let div=listaProvas; document.getElementById('totalSalas').innerText=provas.length; if(!provas.length){div.innerHTML='<small>Nenhuma prova - Carregue seu WORD acima</small>';return;} let filtro=document.getElementById('filtroSala'); filtro.innerHTML='<option value="TODAS">TODAS</option>' + provas.map(p=>`<option value="${p.id}">${p.nome} (${p.senha})</option>`).join(''); div.innerHTML=provas.map(p=>`<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div><b style="color:#00ff88">${p.nome}</b> <span style="background:#00ff88;color:#000;padding:2px 6px;border-radius:10px;font-size:10px">${p.qtd}q</span><br><small>Código: <b style="color:#ffeb3b">${p.senha}</b></small></div><div><button class="btn-red" onclick="apagarSala('${p.id}')">🗑️</button></div></div></div>`).join(''); }
+window.salvarProva = async function(){ let nome=nomeProva.value.trim(), senha=senhaUnica.value.trim(), ini=dataInicio.value, fim=dataFim.value; if(!nome||!senha||!ini||!fim){alert("Preencha nome, código, início e fim");return;} if(questoesEditor.length==0){alert("Adicione pelo menos 1 questão!");return;} let qs = questoesEditor.filter(q=>q.pergunta.trim().length>0); if(qs.length==0){alert("Digite as perguntas!");return;} let id=`${profLogado.id}_${norm(senha)}`; let obj={ id:id, nome:nome, senha:senha, inicio:ini, fim:fim, qtd:qs.length, gabarito:qs.map(q=>q.gab||""), questoes:qs, professorId:profLogado.id, professorNome:profLogado.usuario, timestamp:Date.now(), tipo:"editor_visual" }; await setDoc(doc(db,"provas",id),obj,{merge:true}); alert(`✅ Prova salva! ${qs.length} questões | Código: ${senha}`); await carregarDaNuvem(); }
+function renderSalas(){ let div=listaProvas; document.getElementById('totalSalas').innerText=provas.length; if(!provas.length){div.innerHTML='<small>Nenhuma prova ainda - Clique em + ADICIONAR QUESTÃO acima</small>';return;} let filtro=document.getElementById('filtroSala'); filtro.innerHTML='<option value="TODAS">TODAS</option>' + provas.map(p=>`<option value="${p.id}">${p.nome} (${p.senha})</option>`).join(''); div.innerHTML=provas.map(p=>`<div style="background:#222;padding:10px;border-radius:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div><b style="color:#00ff88">${p.nome}</b> <span style="background:#00ff88;color:#000;padding:2px 6px;border-radius:10px;font-size:10px">${p.qtd}q</span><br><small>Código: <b style="color:#ffeb3b">${p.senha}</b></small></div><div><button class="btn-edit" onclick="editarProva('${p.id}')">✏️</button><button class="btn-red" onclick="apagarSala('${p.id}')">🗑️</button></div></div></div>`).join(''); }
+window.editarProva = function(id){ let p=provas.find(x=>x.id==id); if(!p) return; nomeProva.value=p.nome; senhaUnica.value=p.senha; dataInicio.value=p.inicio; dataFim.value=p.fim; questoesEditor = p.questoes; renderEditor(); window.scrollTo({top:0,behavior:'smooth'}); }
 window.apagarSala = async function(id){if(!confirm("Apagar?"))return; await deleteDoc(doc(db,"provas",id)); await carregarDaNuvem();}
-window.abrirProvaComCodigo = async function(){ if(!alunoLogado){alert("Digite seu nome");return;} let codigo=codigoProvaAluno.value.trim().toLowerCase(); let p=window.todasProvas.find(x=> x.senha.trim().toLowerCase() == codigo); if(!p){alert("Código não encontrado");return;} let agora=new Date(); let ini=parseDataLocal(p.inicio); let fim=parseDataLocal(p.fim); if(agora < ini){alert(`Ainda não começou`);return;} if(agora > fim){alert(`Encerrada`);return;} provaAtual=p; respostas=new Array(p.qtd).fill(''); titProva.innerText=`${p.nome}`; infoAl.innerText=`Aluno: ${alunoLogado.login}`; let htmlQ = ""; p.questoes.forEach((q,i)=>{ if(q.tipo=="dissertativa"){ htmlQ += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""}</div><textarea id="q${i}_disc" placeholder="Digite sua resposta aqui..." style="background:#111;color:#fff;border:2px solid #444" rows="4" oninput="respostas[${i}]=this.value"></textarea></div>`; } else { htmlQ += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""}</div><div class="q-alt" id="q${i}A" onclick="marcar(${i},'A')"><span class="letra">A</span><span>${q.A}</span></div><div class="q-alt" id="q${i}B" onclick="marcar(${i},'B')"><span class="letra">B</span><span>${q.B}</span></div><div class="q-alt" id="q${i}C" onclick="marcar(${i},'C')"><span class="letra">C</span><span>${q.C}</span></div><div class="q-alt" id="q${i}D" onclick="marcar(${i},'D')"><span class="letra">D</span><span>${q.D}</span></div></div>`; } }); document.getElementById('listaQuestoesAluno').innerHTML = htmlQ; document.getElementById('alunoLogin').style.display='none'; areaProva.style.display='block'; if(timerInterval) clearInterval(timerInterval); timerInterval=setInterval(()=>{let d=fim-new Date(); if(d<=0){clearInterval(timerInterval); enviar(); return;} let h=Math.floor(d/3600000), m=Math.floor((d%3600000)/60000), s=Math.floor((d%60000)/1000); cronometro.innerText=`⏰ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000); }
+window.abrirProvaComCodigo = async function(){ if(!alunoLogado){alert("Digite seu nome");return;} let codigo=codigoProvaAluno.value.trim().toLowerCase(); let p=window.todasProvas.find(x=> x.senha.trim().toLowerCase() == codigo); if(!p){alert("Código não encontrado");return;} let agora=new Date(); let ini=parseDataLocal(p.inicio); let fim=parseDataLocal(p.fim); if(agora < ini){alert(`Ainda não começou`);return;} if(agora > fim){alert(`Encerrada`);return;} provaAtual=p; respostas=new Array(p.qtd).fill(''); titProva.innerText=`${p.nome}`; infoAl.innerText=`Aluno: ${alunoLogado.login}`; let htmlQ = ""; p.questoes.forEach((q,i)=>{ if(q.tipo=='dissertativa'){ htmlQ += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""}</div><textarea id="q${i}_disc" placeholder="Digite sua resposta aqui..." style="background:#111;color:#fff;border:2px solid #444" rows="4" oninput="respostas[${i}]=this.value"></textarea></div>`; } else { htmlQ += `<div class="q-card"><div class="q-pergunta">${i+1}) ${q.pergunta} ${q.htmlImagens||""}</div><div class="q-alt" id="q${i}A" onclick="marcar(${i},'A')"><span class="letra">A</span><span>${q.A}</span></div><div class="q-alt" id="q${i}B" onclick="marcar(${i},'B')"><span class="letra">B</span><span>${q.B}</span></div><div class="q-alt" id="q${i}C" onclick="marcar(${i},'C')"><span class="letra">C</span><span>${q.C}</span></div><div class="q-alt" id="q${i}D" onclick="marcar(${i},'D')"><span class="letra">D</span><span>${q.D}</span></div></div>`; } }); document.getElementById('listaQuestoesAluno').innerHTML = htmlQ; document.getElementById('alunoLogin').style.display='none'; areaProva.style.display='block'; if(timerInterval) clearInterval(timerInterval); timerInterval=setInterval(()=>{let d=fim-new Date(); if(d<=0){clearInterval(timerInterval); enviar(); return;} let h=Math.floor(d/3600000), m=Math.floor((d%3600000)/60000), s=Math.floor((d%60000)/1000); cronometro.innerText=`⏰ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000); }
 window.marcar = function(q,l){ respostas[q]=l; ['A','B','C','D'].forEach(x=>{ let el = document.getElementById(`q${q}${x}`); if(el) el.classList.toggle('sel',x==l); }); }
-window.enviar = async function(){ if(timerInterval) clearInterval(timerInterval); let ac=0; for(let i=0;i<provaAtual.qtd;i++){ if(provaAtual.questoes[i].tipo!="dissertativa" && respostas[i]==provaAtual.questoes[i].gab) ac++; } let perc=(ac/provaAtual.qtd*100).toFixed(1); let idResultado=`${provaAtual.id}_${norm(alunoLogado.login)}_${Date.now()}`; let novo={ id:idResultado, provaId:provaAtual.id, provaNome:provaAtual.nome, professorId:provaAtual.professorId, professorNome:provaAtual.professorNome, nome:alunoLogado.login.toUpperCase(), loginAluno:alunoLogado.login, acertos:ac, total:provaAtual.qtd, nota:perc, respostas:respostas.join(' | '), gabarito:provaAtual.questoes.map(q=>q.gab||"").join(','), data:new Date().toLocaleString(), timestamp:Date.now() }; await setDoc(doc(db,"resultados",idResultado),novo,{merge:true}); areaProva.style.display='none'; resAl.style.display='block'; resAl.innerHTML=`<h3 style="color:#00ff88">✅ Enviado!</h3><b style="font-size:24px">${ac}/${provaAtual.qtd} = ${perc}%</b><br><small>Suas respostas dissertativas foram salvas</small><br><br><button class="btn-sec" onclick="location.reload()" style="width:100%;padding:14px">🚪 SAIR</button>`; }
+window.enviar = async function(){ if(timerInterval) clearInterval(timerInterval); let ac=0; for(let i=0;i<provaAtual.qtd;i++){ if(provaAtual.questoes[i].tipo!='dissertativa' && respostas[i]==provaAtual.questoes[i].gab) ac++; } let perc=(ac/provaAtual.qtd*100).toFixed(1); let idResultado=`${provaAtual.id}_${norm(alunoLogado.login)}_${Date.now()}`; let novo={ id:idResultado, provaId:provaAtual.id, provaNome:provaAtual.nome, professorId:provaAtual.professorId, professorNome:provaAtual.professorNome, nome:alunoLogado.login.toUpperCase(), loginAluno:alunoLogado.login, acertos:ac, total:provaAtual.qtd, nota:perc, respostas:respostas.join(' | '), gabarito:provaAtual.questoes.map(q=>q.gab||"").join(','), data:new Date().toLocaleString(), timestamp:Date.now() }; await setDoc(doc(db,"resultados",idResultado),novo,{merge:true}); areaProva.style.display='none'; resAl.style.display='block'; resAl.innerHTML=`<h3 style="color:#00ff88">✅ Enviado!</h3><b style="font-size:24px">${ac}/${provaAtual.qtd} = ${perc}%</b><br><br><button class="btn-sec" onclick="location.reload()" style="width:100%;padding:14px">🚪 SAIR</button>`; }
 window.renderRes = function(){ let div=tabRes; let filtro=document.getElementById('filtroSala')?.value || "TODAS"; let lista=filtro=="TODAS"?resultados:resultados.filter(r=>r.provaId==filtro); if(!lista.length){div.innerHTML='<small>Nenhum</small>';return;} let ord=[...lista].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)); div.innerHTML=`<table><tr><th>ALUNO</th><th>NOTA</th><th>RESP</th><th></th></tr>`+ord.map(r=>`<tr><td><b>${r.nome}</b></td><td>${r.acertos}/${r.total}<br><b style="color:#00ff88">${r.nota}%</b></td><td style="font-size:10px">${r.respostas.substring(0,100)}</td><td><button class="btn-red" onclick="apagarResultado('${r.id}')">🗑️</button></td></tr>`).join('')+`</table>`; }
 window.apagarResultado = async function(id){if(!confirm("Apagar?"))return; await deleteDoc(doc(db,"resultados",id)); await carregarDaNuvem();}
 window.baixar = function(){ let filtro=document.getElementById('filtroSala')?.value || "TODAS"; let lista=filtro=="TODAS"?resultados:resultados.filter(r=>r.provaId==filtro); if(!lista.length){alert('Vazio');return;} let csv='PROFESSOR;PROVA;ALUNO;ACERTOS;TOTAL;NOTA;RESPOSTAS;GABARITO;DATA\n'; lista.forEach(r=>csv+=`${r.professorNome};${r.provaNome};${r.loginAluno};${r.acertos};${r.total};${r.nota}%;${r.respostas};${r.gabarito};${r.data}\n`); let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=`RESULTADOS.csv`; a.click(); }
-let salvo=localStorage.getItem('prof_logado'); if(salvo){try{profLogado=JSON.parse(salvo); nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; loginProf.style.display='none'; areaProf.style.display='block'; carregarDaNuvem();}catch{}} carregarSalasParaAluno();
+let salvo=localStorage.getItem('prof_logado'); if(salvo){try{profLogado=JSON.parse(salvo); nomeProfLogado.innerText=profLogado.usuario; idProfLogado.innerText="ID: "+profLogado.id; loginProf.style.display='none'; areaProf.style.display='block'; carregarDaNuvem(); if(questoesEditor.length==0) addQuestao();}catch{}} carregarSalasParaAluno();
 </script>
 </body>
 </html>
